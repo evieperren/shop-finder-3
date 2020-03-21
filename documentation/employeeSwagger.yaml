@@ -1,0 +1,263 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "Employee API"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:3022"
+basePath: "/api"
+schemes:
+  - "http"
+
+paths:
+  /employees: 
+    get: 
+      tags: 
+      - "Employees"
+      summary: "Get all employees" 
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Successful"
+          schema: 
+            $ref: '#/definitions/employees'
+        400:
+          description: "Unable to find employees"
+          schema: 
+            $ref: '#/definitions/employees'
+    post: 
+      tags: 
+      - "Employees"
+      summary: "Create employee"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Employee object to be added"
+        required: true
+        schema:
+          $ref: '#/definitions/employees'
+      responses:
+        200:
+          description: "Successful"
+          schema: 
+            $ref: '#/definitions/employees'
+        404:
+          description: "Employee not found"
+          schema:   
+            $ref: '#/definitions/employees'
+        400:
+          description: "Unable to create employee"
+          schema: 
+            $ref: '#/definitions/employees'
+
+  /employees/{employeeId}:
+      put: 
+        tags: 
+        - "Employees"
+        summary: "Update employee"
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+          - in: "path"
+            name: employeeId
+            required: true
+            description: "Shop id"
+            type: "integer"
+            format: "int64"
+          - in: "path"
+            name: firstName
+            required: true
+            description: "New first name"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: lastName
+            required: true
+            description: "New last name"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: store
+            required: true
+            description: "New store"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: telephone
+            required: true
+            description: "New telephone"
+            type: "number"
+            format: "number"
+          - in: "path"
+            name: email
+            required: true
+            description: "New email"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: postcode
+            required: true
+            description: "New postcode"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: startDate
+            required: true
+            description: ""
+            type: "number"
+            format: "number"
+          - in: "path"
+            name: emergancy contact name
+            required: true
+            description: "New emergancy contact name"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: emergancy contact relation
+            required: true
+            description: "New emergancy contact relation"
+            type: "string"
+            format: "string"
+          - in: "path"
+            name: emergancy contact telephone
+            required: true
+            description: "New emergancy contact telephone"
+            type: "number"
+            format: "number"
+        responses:
+          200:
+            description: "Successful"
+            schema: 
+              $ref: "#/definitions/shops"
+          404:
+            description: "Shop not found"
+            schema:   
+              $ref: "#/definitions/shops"
+          400:
+            description: "Unable to create shop"
+            schema: 
+              $ref: "#/definitions/shops"
+            
+            
+      delete:
+        tags: 
+        - "Employees"
+        summary: "Deletes an employee"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: employeeId
+          required: true
+          description: "Employee id to delete"
+          type: "integer"
+          format: "int64"
+        responses:
+          200: 
+            description: "Deleted"
+            schema:   
+              $ref: '#/definitions/employees'
+          404:
+            description: "Employee not found"
+            schema:   
+              $ref: '#/definitions/employees'
+          400:
+            description: "Unable to delete employee"
+            schema:   
+              $ref: '#/definitions/employees'
+      get: 
+        tags: 
+        - "Employees"
+        summary: "Get one employee" 
+        consumes:
+        - "application/json"
+        produces:
+        - "application/json"
+        parameters:
+        - in: "path"
+          name: employeeId
+          required: true
+          description: "Employee id to return"
+          type: "integer"
+          format: "int64"
+        responses:
+          200:
+            description: "Successful"
+            schema: 
+              $ref: '#/definitions/employees'
+          404:
+            description: "Shop not found"
+            schema:   
+              $ref: '#/definitions/employees'
+
+definitions:
+  employees: 
+    type: "object"
+    properties: 
+      employeeId: 
+        type: "integer"
+        format: "int64"
+      name: 
+        type: "object"
+        properties:
+          firstName: 
+            type: "string"
+            example: "Evie"
+          lastName: 
+            type: "string"
+            example: "Butland"
+      shop: 
+        type: "string"
+        example: "Apple"
+      contactDetails: 
+        type: "object"
+        properties:
+          telephone: 
+            type: "string"
+            example: "01234567891"
+          email: 
+            type: "string"
+            example: "email@email.com"
+          postcode:
+            type: "string"
+            example: "SP10 1DE"
+      startDate: 
+        type: "string"
+        example: "20/02/2020"
+      emergencyContact: 
+        type: "object"
+        properties:
+          name: 
+            type: "string"
+            example: "Clare Butland"
+          relation: 
+            type: "string"
+            enum:
+              - parent
+              - sibling
+              - guardian
+              - friend
+              - collegue
+          telephone: 
+            type: "number"
+            example: "01234567890"
+    
+  /{employeeId}:
+    type: "object"
+    properties: 
+      id: 
+        type: "integer"
+        format: "int64"
+      
