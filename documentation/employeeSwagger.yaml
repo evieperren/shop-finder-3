@@ -140,15 +140,15 @@ paths:
           200:
             description: "Successful"
             schema: 
-              $ref: "#/definitions/shops"
+              $ref: "#/definitions/employees"
           404:
             description: "Shop not found"
             schema:   
-              $ref: "#/definitions/shops"
+              $ref: "#/definitions/employees"
           400:
             description: "Unable to create shop"
             schema: 
-              $ref: "#/definitions/shops"
+              $ref: "#/definitions/employees"
             
             
       delete:
