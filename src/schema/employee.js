@@ -12,8 +12,14 @@ const EmployeeSchema = mongoose.Schema({
     }
   },
   store: {
-    type: String,
-    required: true
+    name: {
+      type: String,
+      required: true
+    },
+    shopId: {
+      type: String,
+      required: true
+    }
   },
   contactDetails: {
     telephone: {
@@ -45,7 +51,7 @@ const EmployeeSchema = mongoose.Schema({
     relation: {
       type: String,
       required: true,
-      enum: [ "parent", "sibling", "guardian", "friend", "collegue"]
+      enum: [ "parent", "sibling", "guardian", "friend", "collegue", "wife", "husband"]
     }
   }
 })

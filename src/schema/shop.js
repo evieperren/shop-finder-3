@@ -12,11 +12,13 @@ const ShopSchema = mongoose.Schema({
   location: {
     postcode: {
       type: String,
-      required: true
+      required: true,
+      uppercase: true
     },
     town: {
       type: String,
-      required: true
+      required: true,
+      uppercase: true
     },
     online: {
       type: Boolean,
@@ -25,7 +27,8 @@ const ShopSchema = mongoose.Schema({
   },
   scale: {
     type: String,
-    required: true
+    required: true,
+    enum: ['local', 'national', 'global', 'international']
   }
 })
 
