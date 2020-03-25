@@ -35,6 +35,7 @@ employeeController.post('/', async(req, res) => {
   try {
     newEmployee.validate((error) => {
       if(error){
+        winston.log('error', error.message)
         res.status(400).json({
           "message": `${error.message}`
         })
@@ -44,6 +45,7 @@ employeeController.post('/', async(req, res) => {
       }
     })
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": "Unable to create new employee"
     })
@@ -56,6 +58,7 @@ employeeController.get('/', async(req, res, next) => {
     res.send(returnedEmployees)
 
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": `${error}`
     })
@@ -67,6 +70,7 @@ employeeController.get('/:employeeId', async(req, res, next) => {
     const returnedEmployees = await Employee.findById(req.params.employeeId)
 
     if(returnedEmployees === null){
+      winston.log('error', error.message)
       res.status(400).json({
         "message": "This employee was unable to be found. Please check this is the employee ID"
       })
@@ -74,6 +78,7 @@ employeeController.get('/:employeeId', async(req, res, next) => {
       res.send(returnedEmployees)
     }
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": `${error}`
     })
@@ -98,6 +103,7 @@ employeeController.put('/:employeeId', async(req, res) => {
 
     returnedEmployee.validate((error) => {
       if(error){
+        winston.log('error', error.message)
         res.status(400).json({
           "message": `${error}`
         })
@@ -107,6 +113,7 @@ employeeController.put('/:employeeId', async(req, res) => {
       }
     })
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": `${error}`
     })
@@ -120,6 +127,7 @@ employeeController.delete('/:employeeId', async(req, res) => {
       "message": `${req.params.employeeId} has been successfully removed`
     })
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": `${error}`
     })
