@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const winston = require('winston')
 const Router = express.Router
 const shopController = new Router()
 const Shop = mongoose.model('shops', require('../schema/shop'))
@@ -22,9 +23,19 @@ shopController.post('/', (req, res) => {
     scale: req.body.scale
   })
   try {
-    newShop.save()
-    res.send(newShop)
+    newShop.validate((error) => {
+      if(error){
+        winston.log('error', error.message)
+        res.status(400).json({
+          "message": `${error.message}`
+        })
+      } else {
+        newShop.save()
+        res.send(newShop)
+      }
+    })
   } catch (error){
+    winston.log('error', error.message)
     res.status(400).json({
       "message": "Unable to create new shop"
     })
@@ -38,6 +49,7 @@ shopController.get('/', async (req, res) => {
     res.send(returnedShops)
 
   } catch (error) {
+    winston.log('error', error.message)
     res.status(400).json({
       "message": "Unable to find shops"
     })
@@ -50,6 +62,7 @@ shopController.get('/:shopId', async(req, res) => {
     res.send(returnedShop)
 
   } catch (error){
+    winston.log('error', error.message)
     res.status(404).json({
       "message": "Unable to find shop"
     })
@@ -67,10 +80,20 @@ shopController.put('/:shopId', async(req, res) => {
     returnedShop.location.online = req.body.location.online || returnedShop.location.online,
     returnedShop.scale = req.body.scale || returnedShop.scale
 
-    returnedShop.save()
-    res.send(returnedShop)
+    returnedShop.validate((error) => {
+      if(error){
+        winston.log('error', error.message)
+        res.status(404).json({
+          "message": `${error.message}`
+        })
+      } else {
+        returnedShop.save()
+        res.send(returnedShop)
+      }
+    })
 
   } catch (error){
+    winston.log('error', error.message)
     res.status(404).json({
       "message": `${error}`
     })
@@ -84,6 +107,7 @@ shopController.delete('/:shopId', async(req, res) => {
       "message": `${req.params.shopId} has been successfully removed`
     })
   } catch (error){
+    winston.log('error', error.message)
     res.status(400).json({
       "message": `${error}`
     })

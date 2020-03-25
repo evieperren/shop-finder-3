@@ -33,9 +33,16 @@ employeeController.post('/', async(req, res) => {
     }
   })
   try {
-    newEmployee.save()
-    res.send(newEmployee)
-
+    newEmployee.validate((error) => {
+      if(error){
+        res.status(400).json({
+          "message": `${error.message}`
+        })
+      } else {
+        newEmployee.save()
+        res.send(newEmployee)
+      }
+    })
   } catch (error) {
     res.status(400).json({
       "message": "Unable to create new employee"
@@ -58,7 +65,14 @@ employeeController.get('/', async(req, res, next) => {
 employeeController.get('/:employeeId', async(req, res, next) => {
   try {
     const returnedEmployees = await Employee.findById(req.params.employeeId)
-    res.send(returnedEmployees)
+
+    if(returnedEmployees === null){
+      res.status(400).json({
+        "message": "This employee was unable to be found. Please check this is the employee ID"
+      })
+    } else {
+      res.send(returnedEmployees)
+    }
   } catch (error) {
     res.status(400).json({
       "message": `${error}`
@@ -82,9 +96,16 @@ employeeController.put('/:employeeId', async(req, res) => {
     returnedEmployee.emergencyContact.telephone = req.body.emergencyContact.telephone || returnedEmployee.emergencyContact.telephone,
     returnedEmployee.emergencyContact.relation = req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation
 
-    returnedEmployee.save()
-    res.send(returnedEmployee)
-
+    returnedEmployee.validate((error) => {
+      if(error){
+        res.status(400).json({
+          "message": `${error}`
+        })
+      } else {
+        returnedEmployee.save()
+        res.send(returnedEmployee)
+      }
+    })
   } catch (error) {
     res.status(400).json({
       "message": `${error}`
