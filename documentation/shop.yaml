@@ -47,7 +47,7 @@ paths:
       parameters:
       - in: "path"
         name: "body"
-        description: "Mentor ID"
+        description: "Employee ID"
         required: true
         content:
           application/json:
@@ -123,7 +123,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/deleted'
+                $ref: '#/components/deletedShop'
         400:
           description: "Bad request"
           content:
@@ -179,6 +179,34 @@ paths:
                 $ref: "#/components/responses/404"
                 
   /shops/{shopId}/employees:
+    post:
+      tags:
+      - Shop
+      summary: "Add an employee"
+      parameters:
+        - name: id
+          in: query
+          description: Add employee by shop ID
+          schema:
+            type: string
+      responses:
+        201:
+          description: "Successfull"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        500:
+          description: "Unexpected Error"
+                
     get:
       tags:
         - Shop
@@ -222,9 +250,9 @@ paths:
       description: Retrieves a employee by shop
       operationId: getOneEmployee
       parameters:
-        - name: id
+        - name: employeeId
           in: query
-          description: Filter employee by shop ID
+          description: Filter employee by employee ID
           schema:
             type: string
       responses:
@@ -248,7 +276,39 @@ paths:
                 $ref: '#/components/responses/404'
         500:
           description: "Unexpected Error"
-  
+          
+    delete:
+      tags:
+        - Shop
+      summary: Remove an employee
+      description: Removes a single employee
+      parameters:
+        - name: id
+          in: query
+          description: Remove employee by employee ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "employeeID has been successfully removed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/deletedEmployee'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
 components:
   schemas:
     shop:
@@ -283,6 +343,7 @@ components:
       required:
         - name
         - type
+        - location
         - scale
         
     employee:   
@@ -343,19 +404,26 @@ components:
 
       required:
         - name
-        - type
-        - scale
+        - store
+        - contactDetails
+        - startDate
+        - emergencyContact
     
   standardResponse:
     type: "object"
     properties:
       message:
         example: "Error message ..."
-  deleted: 
+  deletedShop: 
     type: "object"
     properties:
       message:
         example: "*shopId* has been successfully deleted"
+  deletedEmployee: 
+    type: "object"
+    properties:
+      message:
+        example: "*employeeId* has been successfully deleted"
   notFound: 
     type: "object"
     properties:
