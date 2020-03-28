@@ -7,16 +7,16 @@ servers:
   - url: http://localhost:3040/api/
 
 tags:
-  - name: Shop
-    description: Shop Service
+  - name: Employee
+    description: Employee Service
 
 paths:
   /shops:
     get:
       tags:
-        - Shop
-      summary: Get all Shops
-      description: Retrieves all shops
+        - Employee
+      summary: Get all Employees
+      description: Retrieves all employees
       operationId: getShop
       responses:
         200:
@@ -42,8 +42,8 @@ paths:
           
     post:
       tags:
-      - Shop
-      summary: "Create a shop"
+      - Employee
+      summary: "Create an employee"
       parameters:
       - in: "path"
         name: "body"
@@ -52,7 +52,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/shop"
+              $ref: "#/components/schemas/employee"
       responses:
         201:
           description: "Created"
@@ -71,17 +71,17 @@ paths:
         500:
           description: "Unexpected Error"
 
-  /shops/{shopId}:
+  /employees/{employeeId}:
     get:
       tags:
-        - Shop
-      summary: Get one Shop
-      description: Retrieves a single shop
+        - Employee
+      summary: Get one Employee
+      description: Retrieves a single employee
       operationId: getOneShop
       parameters:
         - name: id
           in: query
-          description: Filter shops by shop ID
+          description: Filter employee by employeee ID
           schema:
             type: string
       responses:
@@ -98,7 +98,7 @@ paths:
               schema:
                 $ref: '#/components/responses/400'
         404:
-          description: "Unable to find shop"
+          description: "Unable to find employee"
           content:
             application/json:
               schema:
@@ -108,18 +108,18 @@ paths:
           
     delete:
       tags:
-        - Shop
-      summary: Delete one Shop
-      description: Deletes a single shop
+        - Employee
+      summary: Delete one employee
+      description: Deletes an employee
       parameters:
         - name: id
           in: query
-          description: Filter shops by shop ID
+          description: Filter employee by employee ID
           schema:
             type: string
       responses:
         200:
-          description: "shopID has been successfully deleted"
+          description: "employeeID has been successfully deleted"
           content:
             application/json:
               schema:
@@ -141,26 +141,26 @@ paths:
 
     put:
       tags:
-        - Shop
-      summary: Update a Shop
-      description: Update a Shop; this includes partial and full updates.
-      operationId: updateShop
+        - Employee
+      summary: Update an employee
+      description: Update an Employee; this includes partial and full updates.
+      operationId: updateEmployee
       parameters:
         - name: id
           in: query
-          description: Filter shops by shop ID
+          description: Filter employee by employee ID
           schema:
             type: string
       requestBody:
-        description: Update shop body
+        description: Update employee body
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/shop"
+              $ref: "#/components/schemas/employee"
       responses:
         200:
-          description: Shop succesfully updated
+          description: Employee succesfully updated
           content:
             application/json:
               schema:
@@ -177,114 +177,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/responses/404"
-                
-  /shops/{shopId}/employees:
-    get:
-      tags:
-        - Shop
-      summary: Get all employees from one shop
-      description: Get all employees from one shop
-      parameters:
-        - name: id
-          in: query
-          description: Filter employees by shop ID
-          schema:
-            type: string
-      responses:
-        200:
-          description: "Successful"
-          content:
-            application/json:
-              schema:
-                type: "array"
-                items:
-                  $ref: '#/components/schemas/employee'
-        400:
-          description: "Bad request"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/400'
-        404:
-          description: "Unable to find shop"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/404'
-        500:
-          description: "Unexpected Error"
-          
-  /shops/{shopId}/employees/{employeeId}:         
-    get:
-      tags:
-        - Shop
-      summary: Get one employee by shop
-      description: Retrieves a employee by shop
-      operationId: getOneEmployee
-      parameters:
-        - name: id
-          in: query
-          description: Filter employee by shop ID
-          schema:
-            type: string
-      responses:
-        200:
-          description: "Successful"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/employee'
-        400:
-          description: "Bad request"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/400'
-        404:
-          description: "Unable to find shop"
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/404'
-        500:
-          description: "Unexpected Error"
   
 components:
   schemas:
-    shop:
-      type: "object"
-      properties:
-        name:
-          type: "string"
-          example: "Zara"
-        type:
-          type: "string"
-          example: "Clothing"
-        location:
-          type: "object"
-          properties: 
-            postcode: 
-              type: "string"
-              example: "SP10 1DE"
-            town: 
-              type: "string"
-              example: "Andover"
-            online: 
-              type: "boolean"
-              example: "true"
-        scale: 
-          type: "string"
-          enum: 
-            - small
-            - meduim
-            - large
-            - massive
-
-      required:
-        - name
-        - type
-        - scale
-        
     employee:   
       type: "object"
       properties:
@@ -364,9 +259,9 @@ components:
       
   responses: 
     200: 
-      $ref: "#/components/schemas/shop"
+      $ref: "#/components/schemas/employee"
     201:
-      $ref: "#/components/schemas/shop"
+      $ref: "#/components/schemas/employee"
     400: 
       $ref: "#/components/standardResponse"
     404: 
