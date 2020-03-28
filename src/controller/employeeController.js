@@ -13,8 +13,8 @@ employeeController.use((req, res, next) => {
 employeeController.post('/', async(req, res) => {
   const newEmployee = new Employee({
     name: {
-      firstName: req.body.name.firstName,
-      lastName: req.body.name.lastName,
+      first: req.body.name.first,
+      last: req.body.name.last,
     },
     store: {
       name: req.body.store.name,
@@ -89,8 +89,8 @@ employeeController.put('/:employeeId', async(req, res) => {
   try {
     const returnedEmployee = await Employee.findById(req.params.employeeId)
 
-    returnedEmployee.name.firstName = req.body.name.firstName || returnedEmployee.name.firstName,
-    returnedEmployee.name.lastName = req.body.name.lastName || returnedEmployee.name.lastName,
+    returnedEmployee.name.first = req.body.name.first || returnedEmployee.name.first,
+    returnedEmployee.name.last = req.body.name.last || returnedEmployee.name.last,
     returnedEmployee.store.name = req.body.store.name || returnedEmployee.store.name,
     returnedEmployee.store.shopId = req.body.store.shopId || returnedEmployee.store.shopId,
     returnedEmployee.contactDetails.telephone = req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone,

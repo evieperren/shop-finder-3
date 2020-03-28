@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const EmployeeSchema = mongoose.Schema({
   name: {
-    firstName: {
+    first: {
       type: String,
       required: [true, 'Please provide a first name'],
       minLength: 2,
@@ -16,7 +16,7 @@ const EmployeeSchema = mongoose.Schema({
         message: 'Please remove non-letter characters'
       }
     },
-    lastName: {
+    last: {
       type: String,
       required: [true, 'Please provide a last name'],
       minLength: 2,
