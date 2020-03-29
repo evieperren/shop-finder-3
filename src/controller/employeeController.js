@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const Router = express.Router
 const employeeController = new Router()
 const Employee = mongoose.model('employee', require('../schema/employee'))
+const winston = require('winston')
 
 employeeController.use((req, res, next) => {
   console.log('reached employee controller')
@@ -65,18 +66,10 @@ employeeController.get('/', async(req, res, next) => {
   }
 })
 // READ ONE
-employeeController.get('/:employeeId', async(req, res, next) => {
+employeeController.get('/:id', async(req, res, next) => {
+  const returnedEmployees = await Employee.findById(req.params.id)
   try {
-    const returnedEmployees = await Employee.findById(req.params.employeeId)
-
-    if(returnedEmployees === null){
-      winston.log('error', error.message)
-      res.status(400).json({
-        "message": "This employee was unable to be found. Please check this is the employee ID"
-      })
-    } else {
-      res.send(returnedEmployees)
-    }
+    res.send(returnedEmployees)
   } catch (error) {
     winston.log('error', error.message)
     res.status(400).json({
@@ -85,9 +78,9 @@ employeeController.get('/:employeeId', async(req, res, next) => {
   }
 })
 // UPDATE
-employeeController.put('/:employeeId', async(req, res) => {
+employeeController.put('/:id', async(req, res) => {
   try {
-    const returnedEmployee = await Employee.findById(req.params.employeeId)
+    const returnedEmployee = await Employee.findById(req.params.id)
 
     returnedEmployee.name.first = req.body.name.first || returnedEmployee.name.first,
     returnedEmployee.name.last = req.body.name.last || returnedEmployee.name.last,
@@ -120,11 +113,11 @@ employeeController.put('/:employeeId', async(req, res) => {
   }
 })
 // DELETE
-employeeController.delete('/:employeeId', async(req, res) => {
+employeeController.delete('/:id', async(req, res) => {
   try {
-    const returnedEmployee = await Employee.findByIdAndDelete(req.params.employeeId)
+    const returnedEmployee = await Employee.findByIdAndDelete(req.params.id)
     res.status(200).json({
-      "message": `${req.params.employeeId} has been successfully removed`
+      "message": `${req.params.id} has been successfully removed`
     })
   } catch (error) {
     winston.log('error', error.message)

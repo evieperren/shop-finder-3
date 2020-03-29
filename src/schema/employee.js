@@ -136,7 +136,7 @@ const EmployeeSchema = mongoose.Schema({
     relation: {
       type: String,
       required: [true, 'Please provide a valid relation'],
-      enum: [ "parent", "sibling", "guardian", "friend", "collegue", "wife", "husband"]
+      enum: [ "parent", "sibling", "guardian", "friend", "collegue", "wife", "husband", "child"]
     }
   }
 })
