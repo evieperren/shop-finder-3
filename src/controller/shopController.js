@@ -5,6 +5,7 @@ const Router = express.Router
 const shopController = new Router()
 const Shop = mongoose.model('shops', require('../schema/shop'))
 const axios = require('axios')
+const stringify = require('json-stringify-safe')
 
 shopController.use((req, res, next) => {
   console.log('reached shop controller')
@@ -121,8 +122,9 @@ shopController.get('/:shopId/employees', (req, res) => {
   axios
   .get('http://localhost:3040/api/employees')
   .then((returnedEmployees) => {
-    res.send(returnedEmployees)
-    console.log(returnedEmployees)
+    stringify.getSerialize(returnedEmployees)
+    console.log(returnedEmployees.data)
+    res.send(returnedEmployees.data)
   })
   .catch((error) => {
     res.status(400).json({
