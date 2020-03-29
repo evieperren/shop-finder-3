@@ -6,7 +6,9 @@ const expressWinston = require('express-winston')
 const cors = require('cors')
 const app = express()
 
-mongoose.connect('mongodb://localhost:2000/shop-finder-3', { useNewUrlParser: true , useUnifiedTopology: true })
+
+console.log(process.env.NODE_ENV)
+mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true , useUnifiedTopology: true })
   .then(() => {
     app.use(cors())
     app.use(bodyParser.urlencoded({ extended: true}))

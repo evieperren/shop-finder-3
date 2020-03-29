@@ -117,13 +117,18 @@ shopController.delete('/:shopId', async(req, res) => {
 })
 
 // GET ALL EMPLOYEES
-// "TypeError: Converting circular structure to JSON"
 shopController.get('/:shopId/employees', (req, res) => {
   axios
-  .get('http://localhost:3040/api/employees')
+  .get('http://localhost:3040/api/employees', {
+    // params: {
+    //   filter: {
+    //     shopId: req.params.shopId
+    //   }
+    // }
+  })
   .then((returnedEmployees) => {
+    // "TypeError: Converting circular structure to JSON"
     stringify.getSerialize(returnedEmployees)
-    console.log(returnedEmployees.data)
     res.send(returnedEmployees.data)
   })
   .catch((error) => {
@@ -148,34 +153,33 @@ shopController.get('/:shopId/employees/:employeeID', (req, res) => {
     })
 })
 // ADD AN  EMPLOYEE
-// "TypeError: Converting circular structure to JSON"
 shopController.post('/:shopId/employees', (req, res) => {
   axios
     .post('http://localhost:3040/api/employees', {
       name: {
-        first: "Richard",
-        last: "Butland"
+        first: req.body.name.first,
+        last: req.body.name.last
       },
       store: {
-        name: "Hovis",
-        shopId: "5e77b1a75af80d85a8"
+        name: req.body.store.name,
+        shopId: req.body.store.shopId
       },
       contactDetails: {
-        telephone: "07775467890",
-        email: "richard.butland@gmail.com",
-        postcode: "SP10 6GH"
+        telephone: req.body.contactDetails.telephone,
+        email: req.body.contactDetails.email,
+        postcode: req.body.contactDetails.postcode
       },
-      startDate: "30/03/2020",
+      startDate: req.body.startDate,
       emergencyContact: {
-        name: "Dean",
-        telephone: "01234567858",
-        relation: "child"
+        name: req.body.emergencyContact.name,
+        telephone: req.body.emergencyContact.telephone,
+        relation: req.body.emergencyContact.relation
       }
     })
     .then((response) => {
-      // response.save()
-      res.send(response)
-      console.log(response)
+      stringify.getSerialize(response)
+      const newEmployee = response.data
+      res.send(newEmployee)
     })
     .catch((error) => {
       res.status(400).json({
