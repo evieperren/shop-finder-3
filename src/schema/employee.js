@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const EmployeeSchema = mongoose.Schema({
   name: {
@@ -10,11 +10,9 @@ const EmployeeSchema = mongoose.Schema({
       uppercase: true,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([a-zA-Z])\w/.test(value)
-        },
-        message: 'Please remove non-letter characters'
-      }
+        validator: (value) => /([a-zA-Z])\w/.test(value),
+        message: 'Please remove non-letter characters',
+      },
     },
     last: {
       type: String,
@@ -24,12 +22,10 @@ const EmployeeSchema = mongoose.Schema({
       uppercase: true,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([a-zA-Z])\w/.test(value)
-        },
-        message: 'Please remove non-letter characters'
-      }
-    }
+        validator: (value) => /([a-zA-Z])\w/.test(value),
+        message: 'Please remove non-letter characters',
+      },
+    },
   },
   store: {
     name: {
@@ -39,23 +35,19 @@ const EmployeeSchema = mongoose.Schema({
       maxLength: 144,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([a-zA-Z])\w/.test(value)
-        },
-        message: 'Please remove non-letter characters'
-      }
+        validator: (value) => /([a-zA-Z])\w/.test(value),
+        message: 'Please remove non-letter characters',
+      },
     },
     shopId: {
       type: String,
       required: [true, 'Please provide a shop ID'],
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([a-zA-Z0-9])\w/.test(value)
-        },
-        message: 'Please remove non-letter and non-numeric characters'
-      }
-    }
+        validator: (value) => /([a-zA-Z0-9])\w/.test(value),
+        message: 'Please remove non-letter and non-numeric characters',
+      },
+    },
   },
   contactDetails: {
     telephone: {
@@ -65,22 +57,18 @@ const EmployeeSchema = mongoose.Schema({
       maxLength: 11,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([0-9])\w/.test(value)
-        },
-        message: 'Please remove non-numeric characters'
-      }
+        validator: (value) => /([0-9])\w/.test(value),
+        message: 'Please remove non-numeric characters',
+      },
     },
     email: {
       type: String,
       required: [true, 'Please provide an email address'],
       validate: {
-        validator: (value) => {
-          return /^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/.test(value)
-        },
-        message: "Please provide a valid email address"
+        validator: (value) => /^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/.test(value),
+        message: 'Please provide a valid email address',
       },
-      trim: true
+      trim: true,
     },
     postcode: {
       type: String,
@@ -88,22 +76,18 @@ const EmployeeSchema = mongoose.Schema({
       uppercase: true,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/.test(value)
-        },
-        message: 'Please provide a valid UK postcode'
-      }
-    }
+        validator: (value) => /((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/.test(value),
+        message: 'Please provide a valid UK postcode',
+      },
+    },
   },
   startDate: {
     type: String,
     required: [true, 'Please provide a start date'],
     validate: {
-      validator: (value) => {
-        return /([0-9]{2})\/([0-9]{2})\/([0-9]{4})/.test(value)
-      },
-      message: 'Please provide a valid start date in the format DD/MM/YYYY'
-    }
+      validator: (value) => /([0-9]{2})\/([0-9]{2})\/([0-9]{4})/.test(value),
+      message: 'Please provide a valid start date in the format DD/MM/YYYY',
+    },
   },
   emergencyContact: {
     name: {
@@ -114,11 +98,9 @@ const EmployeeSchema = mongoose.Schema({
       uppercase: true,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /([a-zA-Z])\w/.test(value)
-        },
-        message: 'Please remove non-letter characters'
-      }
+        validator: (value) => /([a-zA-Z])\w/.test(value),
+        message: 'Please remove non-letter characters',
+      },
     },
     telephone: {
       type: String,
@@ -127,18 +109,16 @@ const EmployeeSchema = mongoose.Schema({
       maxLength: 11,
       trim: true,
       validate: {
-        validator: (value) => {
-          return /(^0)([0-9]){9,11}\w+/.test(value)
-        },
-        message: 'Please remove non-numeric characters'
-      }
-    }, 
+        validator: (value) => /(^0)([0-9]){9,11}\w+/.test(value),
+        message: 'Please remove non-numeric characters',
+      },
+    },
     relation: {
       type: String,
       required: [true, 'Please provide a valid relation'],
-      enum: [ "parent", "sibling", "guardian", "friend", "collegue", "wife", "husband", "child"]
-    }
-  }
-})
+      enum: ['parent', 'sibling', 'guardian', 'friend', 'collegue', 'wife', 'husband', 'child'],
+    },
+  },
+});
 
-module.exports = EmployeeSchema
+module.exports = EmployeeSchema;
