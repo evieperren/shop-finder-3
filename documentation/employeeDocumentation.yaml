@@ -147,7 +147,7 @@ paths:
       operationId: updateEmployee
       parameters:
         - name: id
-          in: query
+          in: path
           description: Filter employee by employee ID
           schema:
             type: string
