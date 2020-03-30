@@ -8,7 +8,6 @@ const routerPage = require('./routes/router');
 
 const app = express();
 
-console.log(process.env.NODE_ENV);
 mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     app.use(cors());
