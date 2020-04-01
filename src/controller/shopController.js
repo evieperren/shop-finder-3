@@ -60,7 +60,13 @@ shopController.get('/', async (req, res) => {
 shopController.get('/:shopId', async (req, res) => {
   try {
     const returnedShop = await Shop.findById(req.params.shopId);
-    res.send(returnedShop);
+    if(returnedShop === null ){
+      res.status(404).json({
+        message: 'Unable to find shop',
+      });
+    } else {
+      res.send(returnedShop);
+    }
   } catch (error) {
     winston.log('error', error.message);
     res.status(404).json({
@@ -116,13 +122,7 @@ shopController.delete('/:shopId', async (req, res) => {
 // GET ALL EMPLOYEES
 shopController.get('/:shopId/employees', (req, res) => {
   axios
-    .get('http://localhost:3040/api/employees', {
-    // params: {
-    //   filter: {
-    //     shopId: req.params.shopId
-    //   }
-    // }
-    })
+    .get('http://localhost:3040/api/employees')
     .then((returnedEmployees) => {
     // "TypeError: Converting circular structure to JSON"
       stringify.getSerialize(returnedEmployees);
@@ -200,3 +200,9 @@ shopController.delete('/:shopId/employees/:employeeId', (req, res) => {
     });
 });
 module.exports = shopController;
+
+
+async function returnShop(shopId){
+  const returnedShop = await Shop.findById(shopId)
+  res.send(returnedShop)
+}

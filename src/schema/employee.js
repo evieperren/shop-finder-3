@@ -63,6 +63,7 @@ const EmployeeSchema = mongoose.Schema({
     },
     email: {
       type: String,
+      unique: true,
       required: [true, 'Please provide an email address'],
       validate: {
         validator: (value) => /^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/.test(value),
