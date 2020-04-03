@@ -5,6 +5,7 @@ const winston = require('winston');
 const expressWinston = require('express-winston');
 const cors = require('cors');
 const routerPage = require('./routes/router');
+const passport =  require('./passport')
 
 const app = express();
 
@@ -13,6 +14,7 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     app.use(cors());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
+    app.use(passport.initialize())
 
     // needs express winston or error
     // 'attempt to write logs with no transports...requires middleware function'
