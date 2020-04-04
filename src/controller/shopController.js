@@ -77,24 +77,40 @@ shopController.put('/:shopId', async (req, res) => {
   try {
     const returnedShop = await Shop.findById(req.params.shopId);
 
-    returnedShop.name = req.body.name || returnedShop.name;
-    returnedShop.type = req.body.type || returnedShop.type;
-    returnedShop.location.postcode = req.body.location.postcode || returnedShop.location.postcode;
-    returnedShop.location.town = req.body.location.town || returnedShop.location.town;
-    returnedShop.location.online = req.body.location.online || returnedShop.location.online;
-    returnedShop.scale = req.body.scale || returnedShop.scale;
-
-    returnedShop.validate((error) => {
-      if (error) {
-        winston.error(error.message);
-        res.status(404).json({
-          message: `${error.message}`,
-        });
-      } else {
-        returnedShop.save();
-        res.send(returnedShop);
+    const updatedShop = {
+      ...returnedShop._doc,
+      ...{
+        name: req.body.name || returnedShop.name,
+        type: req.body.type || returnedShop.type,
+        location: {
+          postcode: req.body.location.postcode || returnedShop.location.postcode,
+          town: req.body.location.town || returnedShop.location.town,
+          online: req.body.location.online || returnedShop.location.online
+        },
+        scale: req.body.scale || returnedShop.scale
       }
-    });
+    }
+    // const { name , type, postcode, town, online, scale } =  returnedShop
+    // name = req.body.name || returnedShop.name
+    // type = req.body.type || returnedShop.type
+    // postcode = req.body.location.postcode || returnedShop.location.postcode
+    // town = req.body.location.town || returnedShop.location.town
+    // online = req.body.location.online || returnedShop.location.online
+    // scale = req.body.scale || returnedShop.scale
+
+    console.log(updatedShop)
+
+    // updatedShop.validate((error) => {
+    //   if (error) {
+    //     winston.error(error.message);
+    //     res.status(404).json({
+    //       message: `${error.message}`,
+    //     });
+    //   } else {
+        updatedShop.save();
+        res.send(updatedShop);
+      // }
+    // });
   } catch (error) {
     winston.error(error.message);
     res.status(404).json({
