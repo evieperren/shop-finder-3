@@ -24,6 +24,10 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
           level: 'error',
           filename: './logs/errors.log',
         }),
+        new winston.transports.File({
+          level: 'debug',
+          filename: './logs/debug.log'
+        })
       ],
       format: winston.format.combine(
         winston.format.colorize(),
@@ -33,10 +37,10 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     }));
 
     app.use('/api', routerPage);
-    console.log('connected to database');
+    winston.debug('connected to database');
   })
   .catch((error) => {
-    winston.log(error, error.message);
+    winston.error(error.message);
     console.log(error, 'Unable to connect to database');
   });
 

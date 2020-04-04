@@ -7,7 +7,7 @@ const employeeController = new Router();
 const Employee = mongoose.model('employee', require('../schema/employee'));
 
 employeeController.use((req, res, next) => {
-  console.log('reached employee controller');
+  winston.debug('Reached employee controller');
   next();
 });
 
@@ -37,7 +37,7 @@ employeeController.post('/', async (req, res) => {
   try {
     newEmployee.validate((error) => {
       if (error) {
-        winston.log('error', error.message);
+        winston.error(error.message);
         res.status(400).json({
           message: `${error.message}`,
         });
@@ -47,7 +47,7 @@ employeeController.post('/', async (req, res) => {
       }
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: 'Unable to create new employee',
     });
@@ -59,7 +59,7 @@ employeeController.get('/', async (req, res) => {
     const returnedEmployees = await Employee.find();
     res.send(returnedEmployees);
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: `${error}`,
     });
@@ -71,7 +71,7 @@ employeeController.get('/:id', async (req, res) => {
     const returnedEmployees = await Employee.findById(req.params.id);
     res.send(returnedEmployees);
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: `${error}`,
     });
@@ -96,7 +96,7 @@ employeeController.put('/:id', async (req, res) => {
 
     returnedEmployee.validate((error) => {
       if (error) {
-        winston.log('error', error.message);
+        winston.error(error.message);
         res.status(400).json({
           message: `${error}`,
         });
@@ -106,7 +106,7 @@ employeeController.put('/:id', async (req, res) => {
       }
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: `${error}`,
     });
@@ -120,7 +120,7 @@ employeeController.delete('/:id', async (req, res) => {
       message: `${req.params.id} has been successfully removed`,
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: `${error}`,
     });

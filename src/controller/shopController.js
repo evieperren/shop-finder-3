@@ -1,15 +1,13 @@
-const express = require('express');
 const mongoose = require('mongoose');
 const winston = require('winston');
-
-const { Router } = express;
+const { Router } = require('express');
 const shopController = new Router();
 const axios = require('axios');
 const stringify = require('json-stringify-safe');
 const Shop = mongoose.model('shops', require('../schema/shop'));
 
 shopController.use((req, res, next) => {
-  console.log('reached shop controller');
+  winston.debug('Reached shop controller');
   next();
 });
 
@@ -28,7 +26,7 @@ shopController.post('/', (req, res) => {
   try {
     newShop.validate((error) => {
       if (error) {
-        winston.log('error', error.message);
+        winston.error(error.message);
         res.status(400).json({
           message: `${error.message}`,
         });
@@ -38,7 +36,7 @@ shopController.post('/', (req, res) => {
       }
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: 'Unable to create new shop',
     });
@@ -50,7 +48,7 @@ shopController.get('/', async (req, res) => {
     const returnedShops = await Shop.find();
     res.send(returnedShops);
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: 'Unable to find shops',
     });
@@ -68,7 +66,7 @@ shopController.get('/:shopId', async (req, res) => {
       res.send(returnedShop);
     }
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(404).json({
       message: 'Unable to find shop',
     });
@@ -88,7 +86,7 @@ shopController.put('/:shopId', async (req, res) => {
 
     returnedShop.validate((error) => {
       if (error) {
-        winston.log('error', error.message);
+        winston.error(error.message);
         res.status(404).json({
           message: `${error.message}`,
         });
@@ -98,7 +96,7 @@ shopController.put('/:shopId', async (req, res) => {
       }
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(404).json({
       message: `${error}`,
     });
@@ -112,7 +110,7 @@ shopController.delete('/:shopId', async (req, res) => {
       message: `${req.params.shopId} has been successfully removed`,
     });
   } catch (error) {
-    winston.log('error', error.message);
+    winston.error(error.message);
     res.status(400).json({
       message: `${error}`,
     });
@@ -140,7 +138,6 @@ shopController.get('/:shopId/employees/:employeeID', (req, res) => {
   axios
     .get(`http://localhost:3040/api/employees/${req.params.employeeId}`)
     .then((response) => {
-      // console.log(response)
       res.send(response);
     })
     .catch((error) => {

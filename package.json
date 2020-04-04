@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "cross-env NODE_ENV=develop nodemon index.js",
-    "build": "cross-env NODE_ENV=production nodemon index.js",
+    "start": "nodemon index.js",
     "lint": "npx eslint ./src --fix"
   },
   "keywords": [],
