@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   version: 0.0.1
   title: Shop API
-  
+
 servers:
   - url: http://localhost:3040/api/
 
@@ -26,20 +26,20 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: '#/components/responses/200'
+                  $ref: '#/components/schemas/employee'
         404:
           description: "Shops not found"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/404'
+                $ref: '#/components/responses/404NotFound'
         500:
           description: "Unexpected Error"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/500'
-          
+                $ref: '#/components/responses/500ServerError'
+
     post:
       tags:
       - Employee
@@ -49,10 +49,15 @@ paths:
         name: "body"
         description: "Mentor ID"
         required: true
+        schema:
+          type: "string"
+      requestBody:
+        description: Update employee body
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/employee"
+              $ref: "#/components/requestBodies/employee"
       responses:
         201:
           description: "Created"
@@ -61,15 +66,19 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: '#/components/responses/201'
+                  $ref: '#/components/schemas/employee'
         400:
           description: "Bad request"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/400'
+                $ref: '#/components/responses/400BadRequest'
         500:
           description: "Unexpected Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/500ServerError'
 
   /employees/{employeeId}:
     get:
@@ -79,8 +88,9 @@ paths:
       description: Retrieves a single employee
       operationId: getOneShop
       parameters:
-        - name: id
-          in: query
+        - name: employeeId
+          in: path
+          required: true
           description: Filter employee by employeee ID
           schema:
             type: string
@@ -90,31 +100,36 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/201'
+                $ref: '#/components/schemas/employee'
         400:
           description: "Bad request"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/400'
+                $ref: '#/components/responses/400BadRequest'
         404:
           description: "Unable to find employee"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/404'
+                $ref: '#/components/responses/404NotFound'
         500:
           description: "Unexpected Error"
-          
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/500ServerError'
+
     delete:
       tags:
         - Employee
       summary: Delete one employee
       description: Deletes an employee
       parameters:
-        - name: id
-          in: query
-          description: Filter employee by employee ID
+        - name: employeeId
+          in: path
+          required: true
+          description: Filter employee by employeee ID
           schema:
             type: string
       responses:
@@ -123,21 +138,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/deleted'
+                $ref: '#/components/schemas/deleted'
         400:
           description: "Bad request"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/400'
+                $ref: '#/components/responses/400BadRequest'
         404:
           description: "Unable to find shop"
           content:
             application/json:
               schema:
-                $ref: '#/components/responses/404'
+                $ref: '#/components/responses/404NotFound'
         500:
           description: "Unexpected Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/500ServerError'
 
     put:
       tags:
@@ -146,9 +165,10 @@ paths:
       description: Update an Employee; this includes partial and full updates.
       operationId: updateEmployee
       parameters:
-        - name: id
+        - name: employeeId
           in: path
-          description: Filter employee by employee ID
+          required: true
+          description: Filter employee by employeee ID
           schema:
             type: string
       requestBody:
@@ -157,77 +177,80 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/employee"
+              $ref: "#/components/requestBodies/employee"
       responses:
         200:
           description: Employee succesfully updated
           content:
             application/json:
               schema:
-                $ref: "#/components/responses/201"
+                $ref: '#/components/schemas/employee'
         400:
           description: Bad request
           content:
             application/json:
               schema:
-                $ref: "#/components/responses/400"
+                $ref: "#/components/responses/400BadRequest"
         404:
           description: Unable to find shop
           content:
             application/json:
               schema:
-                $ref: "#/components/responses/404"
-  
+                $ref: "#/components/responses/404NotFound"
+
 components:
   schemas:
-    employee:   
+    employee:
       type: "object"
       properties:
+        id:
+          type: "string"
+          example: "5eh938956jke94"
         name:
           type: "object"
           properties:
-            first: 
+            first:
               type: "string"
               example: "evie"
-            last: 
+            last:
               type: "string"
               example: "evie"
         store:
           type: "object"
           properties:
-            name: 
+            name:
               type: "string"
               example: "Zara"
-            shopId: 
+            shopId:
               type: "string"
               example: "012345"
         contactDetails:
           type: "object"
-          properties: 
-            telephone: 
+          properties:
+            telephone:
               type: "number"
               example: "07712345678"
-            email: 
+            email:
               type: "string"
               example: "evie@email.com"
-            postcode: 
+            postcode:
               type: "string"
               example: "SP10 1DE"
-        startDate: 
+        startDate:
           type: "string"
           example: "01/01/2020"
-        emergencyContact: 
+        emergencyContact:
           type: "object"
           properties:
-            name: 
+            name:
               type: "string"
               example: "Clare Butland"
-            telephone: 
+            telephone:
               type: "string"
               example: "0123456789"
-            relation: 
+            relation:
               type: "string"
-              enum: 
+              enum:
                - parent
                - sibling
                - guardian
@@ -240,35 +263,87 @@ components:
         - name
         - type
         - scale
-    
-  standardResponse:
-    type: "object"
-    properties:
-      message:
-        example: "Error message ..."
-  deleted: 
-    type: "object"
-    properties:
-      message:
-        example: "*shopId* has been successfully deleted"
-  notFound: 
-    type: "object"
-    properties:
-      error:
-        example: "Unable to be found. Please check ID"
-      
-  responses: 
-    200: 
-      $ref: "#/components/schemas/employee"
-    201:
-      $ref: "#/components/schemas/employee"
-    400: 
-      $ref: "#/components/standardResponse"
-    404: 
-      $ref: "#/components/notFound"
-    500:  
-      $ref: "#/components/standardResponse"
-      
+
+    standardResponse:
+      type: "object"
+      properties:
+        message:
+          example: "Error message ..."
+    deleted:
+      type: "object"
+      properties:
+        message:
+          example: "*shopId* has been successfully deleted"
+    notFound:
+      type: "object"
+      properties:
+        error:
+          example: "Unable to be found. Please check ID"
+
+  responses:
+    400BadRequest:
+      $ref: "#/components/schemas/standardResponse"
+    404NotFound:
+      $ref: "#/components/schemas/notFound"
+    500ServerError:
+      $ref: "#/components/schemas/standardResponse"
+
+  requestBodies:
+    employee:
+      type: "object"
+      properties:
+        name:
+          type: "object"
+          properties:
+            first:
+              type: "string"
+              example: "evie"
+            last:
+              type: "string"
+              example: "evie"
+        store:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "Zara"
+            shopId:
+              type: "string"
+              example: "012345"
+        contactDetails:
+          type: "object"
+          properties:
+            telephone:
+              type: "number"
+              example: "07712345678"
+            email:
+              type: "string"
+              example: "evie@email.com"
+            postcode:
+              type: "string"
+              example: "SP10 1DE"
+        startDate:
+          type: "string"
+          example: "01/01/2020"
+        emergencyContact:
+          type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "Clare Butland"
+            telephone:
+              type: "string"
+              example: "0123456789"
+            relation:
+              type: "string"
+              enum:
+               - parent
+               - sibling
+               - guardian
+               - friend
+               - collegue
+               - wife
+               - husband
   parameters:
     shopId:
       name: shopId
