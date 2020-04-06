@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const winston = require('winston');
-const expressWinston = require('express-winston');
+const winston = require('../utils/logger');
+
 const cors = require('cors');
 const routerPage = require('./routes/router');
 const passport =  require('./passport')
@@ -15,32 +15,15 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
     app.use(passport.initialize())
-
-    // needs express winston or error
-    // 'attempt to write logs with no transports...requires middleware function'
-    app.use(expressWinston.logger({
-      transports: [
-        new winston.transports.File({
-          level: 'error',
-          filename: './logs/errors.log',
-        }),
-        new winston.transports.File({
-          level: 'debug',
-          filename: './logs/debug.log'
-        })
-      ],
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.json(),
-      ),
-      level: 'error',
-    }));
+    app.use(winston);
 
     app.use('/api', routerPage);
-    winston.debug('connected to database');
+    // Cannot read property 'end' of undefined
+    // winston('connected to database');
+    console.log('connected to database');
   })
   .catch((error) => {
-    winston.error(error.message);
+    // winston.log(error.message);
     console.log(error, 'Unable to connect to database');
   });
 
