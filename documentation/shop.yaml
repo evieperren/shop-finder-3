@@ -1,0 +1,459 @@
+openapi: 3.0.1
+info:
+  version: 0.0.1
+  title: Shop API
+  
+servers:
+  - url: http://localhost:3040/api/
+
+tags:
+  - name: Shop
+    description: Shop Service
+
+paths:
+  /shops:
+    get:
+      tags:
+        - Shop
+      summary: Get all Shops
+      description: Retrieves all shops
+      operationId: getShop
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/200'
+        404:
+          description: "Shops not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/500'
+          
+    post:
+      tags:
+      - Shop
+      summary: "Create a shop"
+      parameters:
+      - in: "path"
+        name: "body"
+        description: "Employee ID"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shop"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        500:
+          description: "Unexpected Error"
+
+  /shops/{shopId}:
+    get:
+      tags:
+        - Shop
+      summary: Get one Shop
+      description: Retrieves a single shop
+      operationId: getOneShop
+      parameters:
+        - name: id
+          in: query
+          description: Filter shops by shop ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          
+    delete:
+      tags:
+        - Shop
+      summary: Delete one Shop
+      description: Deletes a single shop
+      parameters:
+        - name: id
+          in: query
+          description: Filter shops by shop ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "shopID has been successfully deleted"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/deletedShop'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+
+    put:
+      tags:
+        - Shop
+      summary: Update a Shop
+      description: Update a Shop; this includes partial and full updates.
+      operationId: updateShop
+      parameters:
+        - name: id
+          in: query
+          description: Filter shops by shop ID
+          schema:
+            type: string
+      requestBody:
+        description: Update shop body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/shop"
+      responses:
+        200:
+          description: Shop succesfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/201"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/400"
+        404:
+          description: Unable to find shop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/404"
+                
+  /shops/{shopId}/employees:
+    post:
+      tags:
+      - Shop
+      summary: "Add an employee"
+      parameters:
+        - name: id
+          in: query
+          description: Add employee by shop ID
+          schema:
+            type: string
+      responses:
+        201:
+          description: "Successfull"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        500:
+          description: "Unexpected Error"
+                
+    get:
+      tags:
+        - Shop
+      summary: Get all employees from one shop
+      description: Get all employees from one shop
+      parameters:
+        - name: id
+          in: query
+          description: Filter employees by shop ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/employee'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          
+  /shops/{shopId}/employees/{employeeId}:         
+    get:
+      tags:
+        - Shop
+      summary: Get one employee by shop
+      description: Retrieves a employee by shop
+      operationId: getOneEmployee
+      parameters:
+        - name: employeeId
+          in: query
+          description: Filter employee by employee ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/employee'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          
+    delete:
+      tags:
+        - Shop
+      summary: Remove an employee
+      description: Removes a single employee
+      parameters:
+        - name: id
+          in: query
+          description: Remove employee by employee ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "employeeID has been successfully removed"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/deletedEmployee'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+components:
+  schemas:
+    shop:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "Zara"
+        type:
+          type: "string"
+          example: "Clothing"
+        location:
+          type: "object"
+          properties: 
+            postcode: 
+              type: "string"
+              example: "SP10 1DE"
+            town: 
+              type: "string"
+              example: "Andover"
+            online: 
+              type: "boolean"
+              example: "true"
+        scale: 
+          type: "string"
+          enum: 
+            - small
+            - meduim
+            - large
+            - massive
+
+      required:
+        - name
+        - type
+        - location
+        - scale
+        
+    employee:   
+      type: "object"
+      properties:
+        name:
+          type: "object"
+          properties:
+            first: 
+              type: "string"
+              example: "evie"
+            last: 
+              type: "string"
+              example: "evie"
+        store:
+          type: "object"
+          properties:
+            name: 
+              type: "string"
+              example: "Zara"
+            shopId: 
+              type: "string"
+              example: "012345"
+        contactDetails:
+          type: "object"
+          properties: 
+            telephone: 
+              type: "number"
+              example: "07712345678"
+            email: 
+              type: "string"
+              example: "evie@email.com"
+            postcode: 
+              type: "string"
+              example: "SP10 1DE"
+        startDate: 
+          type: "string"
+          example: "01/01/2020"
+        emergencyContact: 
+          type: "object"
+          properties:
+            name: 
+              type: "string"
+              example: "Clare Butland"
+            telephone: 
+              type: "string"
+              example: "0123456789"
+            relation: 
+              type: "string"
+              enum: 
+               - parent
+               - sibling
+               - guardian
+               - friend
+               - collegue
+               - wife
+               - husband
+
+      required:
+        - name
+        - store
+        - contactDetails
+        - startDate
+        - emergencyContact
+    
+  standardResponse:
+    type: "object"
+    properties:
+      message:
+        example: "Error message ..."
+  deletedShop: 
+    type: "object"
+    properties:
+      message:
+        example: "*shopId* has been successfully deleted"
+  deletedEmployee: 
+    type: "object"
+    properties:
+      message:
+        example: "*employeeId* has been successfully deleted"
+  notFound: 
+    type: "object"
+    properties:
+      error:
+        example: "Unable to be found. Please check ID"
+      
+  responses: 
+    200: 
+      $ref: "#/components/schemas/shop"
+    201:
+      $ref: "#/components/schemas/shop"
+    400: 
+      $ref: "#/components/standardResponse"
+    404: 
+      $ref: "#/components/notFound"
+    500:  
+      $ref: "#/components/standardResponse"
+      
+  parameters:
+    shopId:
+      name: shopId
+      in: path
+      description: Shop ID
+      required: true
+      schema:
+        type: string
+    employeeId:
+      name: employeeId
+      in: path
+      description: Employee ID
+      required: true
+      schema:
+        type: string

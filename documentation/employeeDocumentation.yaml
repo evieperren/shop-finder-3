@@ -1,0 +1,286 @@
+openapi: 3.0.1
+info:
+  version: 0.0.1
+  title: Shop API
+  
+servers:
+  - url: http://localhost:3040/api/
+
+tags:
+  - name: Employee
+    description: Employee Service
+
+paths:
+  /shops:
+    get:
+      tags:
+        - Employee
+      summary: Get all Employees
+      description: Retrieves all employees
+      operationId: getShop
+      responses:
+        200:
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/200'
+        404:
+          description: "Shops not found"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/500'
+          
+    post:
+      tags:
+      - Employee
+      summary: "Create an employee"
+      parameters:
+      - in: "path"
+        name: "body"
+        description: "Mentor ID"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/employee"
+      responses:
+        201:
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        500:
+          description: "Unexpected Error"
+
+  /employees/{employeeId}:
+    get:
+      tags:
+        - Employee
+      summary: Get one Employee
+      description: Retrieves a single employee
+      operationId: getOneShop
+      parameters:
+        - name: id
+          in: query
+          description: Filter employee by employeee ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Successful"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/201'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find employee"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+          
+    delete:
+      tags:
+        - Employee
+      summary: Delete one employee
+      description: Deletes an employee
+      parameters:
+        - name: id
+          in: query
+          description: Filter employee by employee ID
+          schema:
+            type: string
+      responses:
+        200:
+          description: "employeeID has been successfully deleted"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/deleted'
+        400:
+          description: "Bad request"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/400'
+        404:
+          description: "Unable to find shop"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/404'
+        500:
+          description: "Unexpected Error"
+
+    put:
+      tags:
+        - Employee
+      summary: Update an employee
+      description: Update an Employee; this includes partial and full updates.
+      operationId: updateEmployee
+      parameters:
+        - name: id
+          in: path
+          description: Filter employee by employee ID
+          schema:
+            type: string
+      requestBody:
+        description: Update employee body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/employee"
+      responses:
+        200:
+          description: Employee succesfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/201"
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/400"
+        404:
+          description: Unable to find shop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/responses/404"
+  
+components:
+  schemas:
+    employee:   
+      type: "object"
+      properties:
+        name:
+          type: "object"
+          properties:
+            first: 
+              type: "string"
+              example: "evie"
+            last: 
+              type: "string"
+              example: "evie"
+        store:
+          type: "object"
+          properties:
+            name: 
+              type: "string"
+              example: "Zara"
+            shopId: 
+              type: "string"
+              example: "012345"
+        contactDetails:
+          type: "object"
+          properties: 
+            telephone: 
+              type: "number"
+              example: "07712345678"
+            email: 
+              type: "string"
+              example: "evie@email.com"
+            postcode: 
+              type: "string"
+              example: "SP10 1DE"
+        startDate: 
+          type: "string"
+          example: "01/01/2020"
+        emergencyContact: 
+          type: "object"
+          properties:
+            name: 
+              type: "string"
+              example: "Clare Butland"
+            telephone: 
+              type: "string"
+              example: "0123456789"
+            relation: 
+              type: "string"
+              enum: 
+               - parent
+               - sibling
+               - guardian
+               - friend
+               - collegue
+               - wife
+               - husband
+
+      required:
+        - name
+        - type
+        - scale
+    
+  standardResponse:
+    type: "object"
+    properties:
+      message:
+        example: "Error message ..."
+  deleted: 
+    type: "object"
+    properties:
+      message:
+        example: "*shopId* has been successfully deleted"
+  notFound: 
+    type: "object"
+    properties:
+      error:
+        example: "Unable to be found. Please check ID"
+      
+  responses: 
+    200: 
+      $ref: "#/components/schemas/employee"
+    201:
+      $ref: "#/components/schemas/employee"
+    400: 
+      $ref: "#/components/standardResponse"
+    404: 
+      $ref: "#/components/notFound"
+    500:  
+      $ref: "#/components/standardResponse"
+      
+  parameters:
+    shopId:
+      name: shopId
+      in: path
+      description: Shop ID
+      required: true
+      schema:
+        type: string
+    employeeId:
+      name: employeeId
+      in: path
+      description: Employee ID
+      required: true
+      schema:
+        type: string
