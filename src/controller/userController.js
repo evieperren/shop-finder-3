@@ -11,7 +11,7 @@ userController.use((req, res, next) => {
 })
 
 // Register
-userController.post('/register', (req, res) => {
+userController.post('/register', async (req, res) => {
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -20,19 +20,13 @@ userController.post('/register', (req, res) => {
   })
 
   try {
-    user.validate((error) => {
-      if(error){
-        res.status(400).json({
-          "message": `${error}`
-        })
-      } else {
-        user.save()
-        res.send(user)
-      }
-    })
+    await user.validate();
+    user.save()
+    res.send(user)
+
   } catch (error){
     res.status(400).json({
-      "message": `${error}`
+      "message": `Unable to create user. ${error}`
     })
   }
 })
@@ -85,16 +79,10 @@ userController.put('/:id', async(req, res) => {
       password: req.body.password || returnedUser.password,
       role: req.body.role || returnedUser.role
     })
-    updatedUser.validate((error) => {
-      if(error){
-        res.status(400).json({
-          "message": `${error}`
-        })
-      } else {
-        updatedUser.save()
-        res.send(updatedUser)
-      }
-    })
+    await updatedUser.validate();
+    updatedUser.save()
+    res.send(updatedUser)
+
   } catch(error){
     res.status(404).json({
       "message": `${error}`

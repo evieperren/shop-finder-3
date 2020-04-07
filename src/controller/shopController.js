@@ -13,7 +13,7 @@ shopController.use((req, res, next) => {
 });
 
 // CREATE
-shopController.post('/', (req, res) => {
+shopController.post('/', async(req, res) => {
   const newShop = new Shop({
     name: req.body.name,
     type: req.body.type,
@@ -25,21 +25,14 @@ shopController.post('/', (req, res) => {
     scale: req.body.scale,
   });
   try {
-    newShop.validate((error) => {
-      if (error) {
-        winston.error(error.message);
-        res.status(400).json({
-          message: `${error.message}`,
-        });
-      } else {
-        newShop.save();
-        res.send(newShop);
-      }
-    });
+    await newShop.validate();
+    newShop.save();
+    res.send(newShop);
+
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
-      message: 'Unable to create new shop',
+      message: `Unable to create new shop. ${error}`,
     });
   }
 });
@@ -59,17 +52,11 @@ shopController.get('/', async (req, res) => {
 shopController.get('/:shopId', async (req, res) => {
   try {
     const returnedShop = await Shop.findById(req.params.shopId);
-    if(returnedShop === null ){
-      res.status(404).json({
-        message: 'Unable to find shop',
-      });
-    } else {
-      res.send(returnedShop);
-    }
+    res.send(returnedShop);
   } catch (error) {
     winston.error(error.message);
     res.status(404).json({
-      message: 'Unable to find shop',
+      message: `Unable to find shop. ${error}`,
     });
   }
 });
@@ -90,18 +77,14 @@ shopController.put('/:shopId', async (req, res) => {
       scale: req.body.scale || returnedShop.scale
     })
 
-    updatedShop.validate((error) => {
-      if(error){
-        console.log(error)
-      } else {
-        updatedShop.save()
-        res.send(updatedShop)
-      }
-    })
+    await updatedShop.validate();
+    updatedShop.save()
+    res.send(updatedShop)
+
   } catch (error) {
     winston.error(error.message);
     res.status(404).json({
-      message: `${error}`,
+      message: `Unable to update shop. ${error}`,
     });
   }
 });

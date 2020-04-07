@@ -14,8 +14,8 @@ employeeController.use((req, res, next) => {
 // CREATE
 employeeController.post('/', [
   // this does not have an effect, validation kicks in here instead
-  body('name').escape().trim().isString(),
-  body('email').normalizeEmail()
+  // body('name').escape().trim().isString(),
+  // body('email').normalizeEmail()
 ], async (req, res) => {
   const newEmployee = new Employee({
     name: {
@@ -39,21 +39,14 @@ employeeController.post('/', [
     },
   });
   try {
-    newEmployee.validate((error) => {
-      if (error) {
-        winston.error(error.message);
-        res.status(400).json({
-          message: `${error.message}`,
-        });
-      } else {
-        newEmployee.save();
-        res.send(newEmployee);
-      }
-    });
+    await newEmployee.validate();
+    newEmployee.save();
+    res.send(newEmployee);
+
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
-      message: 'Unable to create new employee',
+      message: `Unable to create new employee. ${error}`,
     });
   }
 });
@@ -108,21 +101,14 @@ employeeController.put('/:id', async (req, res) => {
       }
     })
 
-    updatedEmployee.validate((error) => {
-      if (error) {
-        winston.error(error.message);
-        res.status(400).json({
-          message: `${error}`,
-        });
-      } else {
-        updatedEmployee.save();
-        res.send(updatedEmployee);
-      }
-    });
+    await updatedEmployee.validate()
+    updatedEmployee.save();
+    res.send(updatedEmployee);
+
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
-      message: `${error}`,
+      message: `Unable to update Employee. ${error}`,
     });
   }
 });
