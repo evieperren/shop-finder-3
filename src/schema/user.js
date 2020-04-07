@@ -19,6 +19,10 @@ const UserSchema = mongoose.Schema({
     required: true,
     minLength: 7,
     maxLength: 1024
+  },
+  role: {
+    type: String,
+    enum: ['shop', 'admin']
   }
 })
 
