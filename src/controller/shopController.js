@@ -4,6 +4,7 @@ const { Router } = require('express');
 const shopController = new Router();
 const axios = require('axios');
 const stringify = require('json-stringify-safe');
+const { check, validationResult } = require('express-validator')
 const Shop = mongoose.model('shops', require('../schema/shop'));
 
 shopController.use((req, res, next) => {
@@ -75,26 +76,28 @@ shopController.get('/:shopId', async (req, res) => {
 // UPDATE
 shopController.put('/:shopId', async (req, res) => {
   try {
-    const returnedShop = await Shop.findById(req.params.shopId);
+    // MongoError: E11000 duplicate key error collection
+    const returnedShop = await Shop.findByIdAndDelete(req.params.shopId);
+    const updatedShop = new Shop({
+      ...returnedShop.toObject(),
+      name: req.body.name || returnedShop.name,
+      type: req.body.type || returnedShop.type,
+      location: {
+        postcode: req.body.location.postcode || returnedShop.location.postcode,
+        town: req.body.location.town || returnedShop.location.town,
+        online: req.body.location.online || returnedShop.location.online
+      },
+      scale: req.body.scale || returnedShop.scale
+    })
 
-    returnedShop.name = req.body.name || returnedShop.name;
-    returnedShop.type = req.body.type || returnedShop.type;
-    returnedShop.location.postcode = req.body.location.postcode || returnedShop.location.postcode;
-    returnedShop.location.town = req.body.location.town || returnedShop.location.town;
-    returnedShop.location.online = req.body.location.online || returnedShop.location.online;
-    returnedShop.scale = req.body.scale || returnedShop.scale;
-
-    returnedShop.validate((error) => {
-      if (error) {
-        winston.error(error.message);
-        res.status(404).json({
-          message: `${error.message}`,
-        });
+    updatedShop.validate((error) => {
+      if(error){
+        console.log(error)
       } else {
-        returnedShop.save();
-        res.send(returnedShop);
+        updatedShop.save()
+        res.send(updatedShop)
       }
-    });
+    })
   } catch (error) {
     winston.error(error.message);
     res.status(404).json({

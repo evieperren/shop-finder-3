@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const winston = require('winston');
-
+const { check, validationResult , body} = require('express-validator');
 const { Router } = express;
 const employeeController = new Router();
 const Employee = mongoose.model('employee', require('../schema/employee'));
@@ -12,7 +12,11 @@ employeeController.use((req, res, next) => {
 });
 
 // CREATE
-employeeController.post('/', async (req, res) => {
+employeeController.post('/', [
+  // this does not have an effect, validation kicks in here instead
+  body('name').escape().trim().isString(),
+  body('email').normalizeEmail()
+], async (req, res) => {
   const newEmployee = new Employee({
     name: {
       first: req.body.name.first,
@@ -80,29 +84,39 @@ employeeController.get('/:id', async (req, res) => {
 // UPDATE
 employeeController.put('/:id', async (req, res) => {
   try {
-    const returnedEmployee = await Employee.findById(req.params.id);
+    const returnedEmployee = await Employee.findByIdAndDelete(req.params.id);
+    const updatedEmployee = new Employee({
+      ...returnedEmployee,
+      name: {
+        first: req.body.name.first || returnedEmployee.name.first,
+        last: req.body.name.last || returnedEmployee.name.last
+      },
+      store: {
+        name: req.body.store.name || returnedEmployee.store.name,
+        shopId: req.body.store.shopId || returnedEmployee.store.shopId
+      },
+      contactDetails: {
+        telephone: req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone,
+        email: req.body.contactDetails.email || returnedEmployee.contactDetails.email,
+        postcode: req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode
+      },
+      startDate: req.body.startDate || returnedEmployee.startDate,
+      emergencyContact: {
+        name: req.body.emergencyContact.name || returnedEmployee.emergencyContact.name,
+        telephone: req.body.emergencyContact.telephone || returnedEmployee.emergencyContact.telephone,
+        relation: req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation
+      }
+    })
 
-    returnedEmployee.name.first = req.body.name.first || returnedEmployee.name.first;
-    returnedEmployee.name.last = req.body.name.last || returnedEmployee.name.last;
-    returnedEmployee.store.name = req.body.store.name || returnedEmployee.store.name;
-    returnedEmployee.store.shopId = req.body.store.shopId || returnedEmployee.store.shopId;
-    returnedEmployee.contactDetails.telephone = req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone;
-    returnedEmployee.contactDetails.email = req.body.contactDetails.email || returnedEmployee.contactDetails.email;
-    returnedEmployee.contactDetails.postcode = req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode;
-    returnedEmployee.startDate = req.body.startDate || returnedEmployee.startDate;
-    returnedEmployee.emergencyContact.name = req.body.emergencyContact.name || returnedEmployee.emergencyContact.name;
-    returnedEmployee.emergencyContact.telephone = req.body.emergencyContact.telephone || returnedEmployee.emergencyContact.telephone;
-    returnedEmployee.emergencyContact.relation = req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation;
-
-    returnedEmployee.validate((error) => {
+    updatedEmployee.validate((error) => {
       if (error) {
         winston.error(error.message);
         res.status(400).json({
           message: `${error}`,
         });
       } else {
-        returnedEmployee.save();
-        res.send(returnedEmployee);
+        updatedEmployee.save();
+        res.send(updatedEmployee);
       }
     });
   } catch (error) {
@@ -112,6 +126,7 @@ employeeController.put('/:id', async (req, res) => {
     });
   }
 });
+
 // DELETE
 employeeController.delete('/:id', async (req, res) => {
   try {
