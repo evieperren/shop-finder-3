@@ -1,10 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const winston = require('winston');
-const { check, validationResult , body} = require('express-validator');
+const passportLocalMongoose = require('passport-local-mongoose');
+// const { check, validationResult , body} = require('express-validator');
 const { Router } = express;
 const employeeController = new Router();
-const Employee = mongoose.model('employee', require('../schema/employee'));
+const employeeSchema = require('../schema/employee');
+
+employeeSchema.plugin(passportLocalMongoose);
+const Employee = mongoose.model('employee', employeeSchema);
 
 employeeController.use((req, res, next) => {
   winston.debug('Reached employee controller');
@@ -42,7 +46,6 @@ employeeController.post('/', [
     await newEmployee.validate();
     newEmployee.save();
     res.send(newEmployee);
-
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
@@ -82,29 +85,28 @@ employeeController.put('/:id', async (req, res) => {
       ...returnedEmployee,
       name: {
         first: req.body.name.first || returnedEmployee.name.first,
-        last: req.body.name.last || returnedEmployee.name.last
+        last: req.body.name.last || returnedEmployee.name.last,
       },
       store: {
         name: req.body.store.name || returnedEmployee.store.name,
-        shopId: req.body.store.shopId || returnedEmployee.store.shopId
+        shopId: req.body.store.shopId || returnedEmployee.store.shopId,
       },
       contactDetails: {
         telephone: req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone,
         email: req.body.contactDetails.email || returnedEmployee.contactDetails.email,
-        postcode: req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode
+        postcode: req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode,
       },
       startDate: req.body.startDate || returnedEmployee.startDate,
       emergencyContact: {
         name: req.body.emergencyContact.name || returnedEmployee.emergencyContact.name,
         telephone: req.body.emergencyContact.telephone || returnedEmployee.emergencyContact.telephone,
-        relation: req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation
-      }
-    })
+        relation: req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation,
+      },
+    });
 
-    await updatedEmployee.validate()
+    await updatedEmployee.validate();
     updatedEmployee.save();
     res.send(updatedEmployee);
-
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({

@@ -1,11 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const cors = require('cors');
 const winston = require('../utils/logger');
 
-const cors = require('cors');
 const routerPage = require('./routes/router');
-const passport =  require('./passport')
+const passport = require('./passport');
 
 const app = express();
 
@@ -14,7 +14,8 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     app.use(cors());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
-    app.use(passport.initialize())
+    app.use(passport.initialize());
+    app.use(passport.session());
     app.use(winston);
 
     app.use('/api', routerPage);
