@@ -1,15 +1,13 @@
-const express = require('express');
 const mongoose = require('mongoose');
 const winston = require('winston');
 const passportLocalMongoose = require('passport-local-mongoose');
-// const { check, validationResult , body} = require('express-validator');
-const { Router } = express;
+const { check, validationResult } = require('express-validator/check');
+const { Router } = require('express');
 const employeeController = new Router();
 const employeeSchema = require('../schema/employee');
 
 employeeSchema.plugin(passportLocalMongoose);
 const Employee = mongoose.model('employee', employeeSchema);
-
 employeeController.use((req, res, next) => {
   winston.debug('Reached employee controller');
   next();
@@ -17,9 +15,55 @@ employeeController.use((req, res, next) => {
 
 // CREATE
 employeeController.post('/', [
-  // this does not have an effect, validation kicks in here instead
-  // body('name').escape().trim().isString(),
-  // body('email').normalizeEmail()
+  check('name.first')
+    .isString()
+    .exists()
+    .trim()
+    .isLength({min: 2, max: 144}),
+  check('name.last')
+    .isString()
+    .exists()
+    .trim()
+    .isLength({min: 2, max: 144}),
+  check('store.name')
+    .isString()
+    .exists()
+    .trim()
+    .isLength({min: 2, max: 144}),
+  check('store.shopId')
+    .isString()
+    .exists()
+    .trim(),
+  check('contactDetails.telephone')
+    .isString()
+    .exists()
+    .trim()
+    .isLength({min: 9, max: 11}),
+  check('contactDetails.email')
+    .isEmail()
+    .isString()
+    .exists()
+    .trim(),
+  check('contactDetails.postcode')
+    .isString()
+    .exists()
+    .trim(),
+  check('startDate')
+    .isString()
+    .exists()
+    .trim(),
+  check('emergencyContact.name')
+    .isString()
+    .exists()
+    .trim(),
+  check('emergencyContact.telephone')
+    .isString()
+    .exists()
+    .trim(),
+  check('emergencyContact.relation')
+    .isString()
+    .exists()
+    .trim(),
 ], async (req, res) => {
   const newEmployee = new Employee({
     name: {
@@ -43,13 +87,21 @@ employeeController.post('/', [
     },
   });
   try {
-    await newEmployee.validate();
-    newEmployee.save();
-    res.send(newEmployee);
+    const errors = await validationResult(newEmployee).throw()
+    // console.log(errors.isEmpty()) // true
+    // if(errors){
+    //   res.status(400).json({
+    //     "message": `${errors.array()}`
+    //   })
+    // } else {
+      // newEmployee.save();
+      // res.send(newEmployee);
+    // }
+
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
-      message: `Unable to create new employee. ${error}`,
+      message: `Unable to create new employee. ${error.mapped()}`,
     });
   }
 });

@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-const express = require('express');
 const User = mongoose.model('User', require('../schema/user'));
 const wintson = require('winston')
-const Router = express.Router
+const { Router } = require('express')
 const userController = new Router()
 
 userController.use((req, res, next) => {

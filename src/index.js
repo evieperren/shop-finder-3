@@ -5,7 +5,7 @@ const cors = require('cors');
 const winston = require('../utils/logger');
 
 const routerPage = require('./routes/router');
-const passport = require('./passport');
+// const passport = require('./passport');
 
 const app = express();
 
@@ -14,8 +14,8 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     app.use(cors());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
-    app.use(passport.initialize());
-    app.use(passport.session());
+    // app.use(passport.initialize());
+    // app.use(passport.session());
     app.use(winston);
 
     app.use('/api', routerPage);
@@ -27,5 +27,6 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
     // winston.log(error.message);
     console.log(error, 'Unable to connect to database');
   });
-
+// DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
+mongoose.set('useCreateIndex', true);
 module.exports = app;

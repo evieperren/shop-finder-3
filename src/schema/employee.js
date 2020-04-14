@@ -5,10 +5,7 @@ const EmployeeSchema = mongoose.Schema({
     first: {
       type: String,
       required: [true, 'Please provide a first name'],
-      minLength: 2,
-      maxLength: 144,
       uppercase: true,
-      trim: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
         message: 'Please remove non-letter characters',
@@ -17,10 +14,7 @@ const EmployeeSchema = mongoose.Schema({
     last: {
       type: String,
       required: [true, 'Please provide a last name'],
-      minLength: 2,
-      maxLength: 144,
       uppercase: true,
-      trim: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
         message: 'Please remove non-letter characters',
@@ -31,9 +25,6 @@ const EmployeeSchema = mongoose.Schema({
     name: {
       type: String,
       required: [true, 'Please provide a store name'],
-      minLength: 2,
-      maxLength: 144,
-      trim: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
         message: 'Please remove non-letter characters',
@@ -42,7 +33,6 @@ const EmployeeSchema = mongoose.Schema({
     shopId: {
       type: String,
       required: [true, 'Please provide a shop ID'],
-      trim: true,
       validate: {
         validator: (value) => /([a-zA-Z0-9])\w/.test(value),
         message: 'Please remove non-letter and non-numeric characters',
@@ -53,9 +43,6 @@ const EmployeeSchema = mongoose.Schema({
     telephone: {
       type: String,
       required: [true, 'Please provide a contact number'],
-      minLength: 9,
-      maxLength: 11,
-      trim: true,
       validate: {
         validator: (value) => /([0-9])\w/.test(value),
         message: 'Please remove non-numeric characters',
@@ -69,13 +56,11 @@ const EmployeeSchema = mongoose.Schema({
         validator: (value) => /^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/.test(value),
         message: 'Please provide a valid email address',
       },
-      trim: true,
     },
     postcode: {
       type: String,
       required: [true, 'Please provide a postcode'],
       uppercase: true,
-      trim: true,
       validate: {
         validator: (value) => /((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/.test(value),
         message: 'Please provide a valid UK postcode',
