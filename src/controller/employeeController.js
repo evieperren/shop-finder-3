@@ -16,7 +16,7 @@ employeeController.use((req, res, next) => {
 // CREATE
 employeeController.post('/', [
   check('name.first')
-    .isString()
+    .isString().withMessage('Please provide a string here...')
     .exists()
     .trim()
     .isLength({min: 2, max: 144}),
@@ -87,21 +87,22 @@ employeeController.post('/', [
     },
   });
   try {
-    const errors = await validationResult(newEmployee).throw()
-    // console.log(errors.isEmpty()) // true
-    // if(errors){
-    //   res.status(400).json({
-    //     "message": `${errors.array()}`
-    //   })
-    // } else {
-      // newEmployee.save();
-      // res.send(newEmployee);
-    // }
+    const errors = await validationResult(newEmployee)
+
+      // console.log(errors.isEmpty()) // true
+    if(!errors.isEmpty()){
+      res.status(400).json({
+        errors: errors.array()
+      })
+    } else {
+      newEmployee.save();
+      res.send(newEmployee);
+    }
 
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({
-      message: `Unable to create new employee. ${error.mapped()}`,
+      message: `Unable to create new employee. ${error}`,
     });
   }
 });
