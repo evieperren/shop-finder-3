@@ -89,7 +89,6 @@ employeeController.post('/', [
   try {
     const errors = await validationResult(newEmployee)
 
-      // console.log(errors.isEmpty()) // true
     if(!errors.isEmpty()){
       res.status(400).json({
         errors: errors.array()
@@ -131,35 +130,33 @@ employeeController.get('/:id', async (req, res) => {
   }
 });
 // UPDATE
+// does not do partial updates?
+
 employeeController.put('/:id', async (req, res) => {
   try {
-    const returnedEmployee = await Employee.findByIdAndDelete(req.params.id);
-    const updatedEmployee = new Employee({
-      ...returnedEmployee,
+    const returnedEmployee = await Employee.findOneAndUpdate({_id: req.params.id},  {
       name: {
-        first: req.body.name.first || returnedEmployee.name.first,
-        last: req.body.name.last || returnedEmployee.name.last,
+        first: req.body.name.first,
+        last: req.body.name.last
       },
       store: {
-        name: req.body.store.name || returnedEmployee.store.name,
-        shopId: req.body.store.shopId || returnedEmployee.store.shopId,
+        name: req.body.store.name,
+        shopId: req.body.store.shopId
       },
       contactDetails: {
-        telephone: req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone,
-        email: req.body.contactDetails.email || returnedEmployee.contactDetails.email,
-        postcode: req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode,
+        telephone: req.body.contactDetails.telephone,
+        email: req.body.contactDetails.email,
+        postcode: req.body.contactDetails.postcode
       },
-      startDate: req.body.startDate || returnedEmployee.startDate,
+      startDate: req.body.startDate,
       emergencyContact: {
-        name: req.body.emergencyContact.name || returnedEmployee.emergencyContact.name,
-        telephone: req.body.emergencyContact.telephone || returnedEmployee.emergencyContact.telephone,
-        relation: req.body.emergencyContact.relation || returnedEmployee.emergencyContact.relation,
-      },
-    });
+        name: req.body.emergencyContact.name,
+        telephone: req.body.emergencyContact.telephone,
+        relation: req.body.emergencyContact.relation
+      }
+    }, {new: true});
+    res.send(returnedEmployee);
 
-    await updatedEmployee.validate();
-    updatedEmployee.save();
-    res.send(updatedEmployee);
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({

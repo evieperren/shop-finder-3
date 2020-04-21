@@ -63,23 +63,18 @@ shopController.get('/:shopId', async (req, res) => {
 // UPDATE
 shopController.put('/:shopId', async (req, res) => {
   try {
-    // MongoError: E11000 duplicate key error collection
-    const returnedShop = await Shop.findByIdAndDelete(req.params.shopId);
-    const updatedShop = new Shop({
-      ...returnedShop.toObject(),
-      name: req.body.name || returnedShop.name,
-      type: req.body.type || returnedShop.type,
+    const returnedShop = await Shop.findOneAndUpdate({ _id: req.params.shopId}, {
+      name: req.body.name,
+      type: req.body.type,
       location: {
-        postcode: req.body.location.postcode || returnedShop.location.postcode,
-        town: req.body.location.town || returnedShop.location.town,
-        online: req.body.location.online || returnedShop.location.online
+        postcode: req.body.location.postcode,
+        town: req.body.location.town,
+        online: req.body.location.online
       },
-      scale: req.body.scale || returnedShop.scale
-    })
+      scale: req.body.scale
+    }, { new: true });
 
-    await updatedShop.validate();
-    updatedShop.save()
-    res.send(updatedShop)
+    res.send(returnedShop)
 
   } catch (error) {
     winston.error(error.message);
