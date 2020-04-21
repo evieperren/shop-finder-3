@@ -1,70 +1,23 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
 const passportLocalMongoose = require('passport-local-mongoose');
-const { check, validationResult } = require('express-validator/check');
+const { checkSchema, validationResult } = require('express-validator/check');
 const { Router } = require('express');
 const employeeController = new Router();
 const employeeSchema = require('../schema/employee');
 
 employeeSchema.plugin(passportLocalMongoose);
 const Employee = mongoose.model('employee', employeeSchema);
+
 employeeController.use((req, res, next) => {
   winston.debug('Reached employee controller');
   next();
 });
 
 // CREATE
-employeeController.post('/', [
-  check('name.first')
-    .isString().withMessage('Please provide a string here...')
-    .exists()
-    .trim()
-    .isLength({min: 2, max: 144}),
-  check('name.last')
-    .isString()
-    .exists()
-    .trim()
-    .isLength({min: 2, max: 144}),
-  check('store.name')
-    .isString()
-    .exists()
-    .trim()
-    .isLength({min: 2, max: 144}),
-  check('store.shopId')
-    .isString()
-    .exists()
-    .trim(),
-  check('contactDetails.telephone')
-    .isString()
-    .exists()
-    .trim()
-    .isLength({min: 9, max: 11}),
-  check('contactDetails.email')
-    .isEmail()
-    .isString()
-    .exists()
-    .trim(),
-  check('contactDetails.postcode')
-    .isString()
-    .exists()
-    .trim(),
-  check('startDate')
-    .isString()
-    .exists()
-    .trim(),
-  check('emergencyContact.name')
-    .isString()
-    .exists()
-    .trim(),
-  check('emergencyContact.telephone')
-    .isString()
-    .exists()
-    .trim(),
-  check('emergencyContact.relation')
-    .isString()
-    .exists()
-    .trim(),
-], async (req, res) => {
+employeeController.post('/', async (req, res) => {
+  req.check('first').isLength({min: 2})
+
   const newEmployee = new Employee({
     name: {
       first: req.body.name.first,
@@ -89,7 +42,8 @@ employeeController.post('/', [
   try {
     const errors = await validationResult(newEmployee)
 
-    if(!errors.isEmpty()){
+    if(errors){
+      console.log(errors)
       res.status(400).json({
         errors: errors.array()
       })

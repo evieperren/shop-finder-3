@@ -5,7 +5,6 @@ const EmployeeSchema = mongoose.Schema({
     first: {
       type: String,
       required: [true, 'Please provide a first name'],
-      uppercase: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
         message: 'Please remove non-letter characters',
