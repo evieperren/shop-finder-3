@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
 const passportLocalMongoose = require('passport-local-mongoose');
-const { checkSchema, validationResult } = require('express-validator/check');
+const { validationResult, check, checkSchema } = require('express-validator/check');
 const { Router } = require('express');
 const employeeController = new Router();
 const employeeSchema = require('../schema/employee');
@@ -15,8 +15,19 @@ employeeController.use((req, res, next) => {
 });
 
 // CREATE
-employeeController.post('/', async (req, res) => {
-  req.check('first').isLength({min: 2})
+employeeController.post('/', [
+  check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
+  check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
+  check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
+  check('store.shopId', 'Please enter a valid shop ID').matches(/([a-zA-Z0-9])\w/).not().isEmpty(),
+  check('contactDetails.telephone', 'Please enter a valid telephone number').matches(/([0-9])\w/),
+  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/),
+  check('contactDetails.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
+  check('startDate', 'Please enter a valid start date').matches(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/),
+  check('emergencyContact.name').isLength({min: 2, max: 144}).isUppercase(),
+  check('emergencyContact.telephone').isLength({min: 9, max:11}).matches(/([0-9])\w/),
+  check('emergencyContact.relation').matches(/(parent)|(sibling)|(guardian)|(friend)|(collegue)|(wife)|(husband)|(child)/)
+], async (req, res) => {
 
   const newEmployee = new Employee({
     name: {
@@ -40,10 +51,9 @@ employeeController.post('/', async (req, res) => {
     },
   });
   try {
-    const errors = await validationResult(newEmployee)
+    const errors = await validationResult(req)
 
-    if(errors){
-      console.log(errors)
+    if(!errors.isEmpty()){
       res.status(400).json({
         errors: errors.array()
       })
@@ -86,7 +96,19 @@ employeeController.get('/:id', async (req, res) => {
 // UPDATE
 // does not do partial updates?
 
-employeeController.put('/:id', async (req, res) => {
+employeeController.put('/:id', [
+  check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
+  check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
+  check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
+  check('store.shopId', 'Please enter a valid shop ID').matches(/([a-zA-Z0-9])\w/).not().isEmpty(),
+  check('contactDetails.telephone', 'Please enter a valid telephone number').matches(/([0-9])\w/),
+  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/),
+  check('contactDetails.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
+  check('startDate', 'Please enter a valid start date').matches(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/),
+  check('emergencyContact.name').isLength({min: 2, max: 144}).isUppercase(),
+  check('emergencyContact.telephone').isLength({min: 9, max:11}).matches(/([0-9])\w/),
+  check('emergencyContact.relation').matches(/(parent)|(sibling)|(guardian)|(friend)|(collegue)|(wife)|(husband)|(child)/)
+], async (req, res) => {
   try {
     const returnedEmployee = await Employee.findOneAndUpdate({_id: req.params.id},  {
       name: {
@@ -109,8 +131,16 @@ employeeController.put('/:id', async (req, res) => {
         relation: req.body.emergencyContact.relation
       }
     }, {new: true});
-    res.send(returnedEmployee);
 
+    const errors = await validationResult(req)
+
+    if(!errors.isEmpty()){
+      res.status(400).json({
+        errors: errors.array()
+      })
+    } else {
+      res.send(returnedEmployee);
+    }
   } catch (error) {
     winston.error(error.message);
     res.status(400).json({

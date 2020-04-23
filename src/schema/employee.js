@@ -13,7 +13,6 @@ const EmployeeSchema = mongoose.Schema({
     last: {
       type: String,
       required: [true, 'Please provide a last name'],
-      uppercase: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
         message: 'Please remove non-letter characters',
@@ -59,7 +58,6 @@ const EmployeeSchema = mongoose.Schema({
     postcode: {
       type: String,
       required: [true, 'Please provide a postcode'],
-      uppercase: true,
       validate: {
         validator: (value) => /((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/.test(value),
         message: 'Please provide a valid UK postcode',
@@ -78,9 +76,6 @@ const EmployeeSchema = mongoose.Schema({
     name: {
       type: String,
       required: [true, 'Please provide a valid emergency contact name'],
-      minLength: 2,
-      maxLength: 144,
-      uppercase: true,
       trim: true,
       validate: {
         validator: (value) => /([a-zA-Z])\w/.test(value),
@@ -90,8 +85,6 @@ const EmployeeSchema = mongoose.Schema({
     telephone: {
       type: String,
       required: [true, 'Please provide an emergency contact number'],
-      minLength: 9,
-      maxLength: 11,
       trim: true,
       validate: {
         validator: (value) => /(^0)([0-9]){9,11}\w+/.test(value),
