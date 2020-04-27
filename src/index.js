@@ -20,7 +20,7 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
   app.use(basicAuth({
     authorizer: authoriseUsers,
     authorizeAsync: true,
-    challenge: true, // for authentication??
+    challenge: true,
     unauthorizedResponse: unauthorisedResponse
   }))
 // [winston] Attempt to write logs with no transports {"message":"connected to database","level":"debug"}
