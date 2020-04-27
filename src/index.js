@@ -8,6 +8,7 @@ const expressValidator = require('express-validator')
 const basicAuth = require('express-basic-auth')
 const routerPage = require('./routes/router')
 const app = express();
+const {authoriseUsers, unauthorisedResponse } = require('./auth')
 
 mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true })
 .then(() => {
@@ -17,11 +18,10 @@ mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, 
   app.use(expressValidator())
 
   app.use(basicAuth({
-    users: {
-      'shop': 'shopPassword',
-      'admin': 'adminPassword'
-    },
-    challenge: true // for authentication??
+    authorizer: authoriseUsers,
+    authorizeAsync: true,
+    challenge: true, // for authentication??
+    unauthorizedResponse: unauthorisedResponse
   }))
 // [winston] Attempt to write logs with no transports {"message":"connected to database","level":"debug"}
     app.use(expressWinston.logger({
