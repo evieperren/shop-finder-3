@@ -5,17 +5,24 @@ const cors = require('cors');
 const winston = require('winston');
 const expressWinston = require('express-winston')
 const expressValidator = require('express-validator')
-const routerPage = require('./routes/router');
-// const passport = require('./passport');
-
+const basicAuth = require('express-basic-auth')
+const routerPage = require('./routes/router')
 const app = express();
 
 mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true })
-  .then(() => {
-    app.use(cors());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
-    app.use(expressValidator())
+.then(() => {
+  app.use(cors());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
+  app.use(expressValidator())
+
+  app.use(basicAuth({
+    users: {
+      'shop': 'shopPassword',
+      'admin': 'adminPassword'
+    },
+    challenge: true // for authentication??
+  }))
 // [winston] Attempt to write logs with no transports {"message":"connected to database","level":"debug"}
     app.use(expressWinston.logger({
       transports: [
