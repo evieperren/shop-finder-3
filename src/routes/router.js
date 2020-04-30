@@ -18,8 +18,9 @@ router.use((req, res, next) => {
 if(authenticateUsers('admin')){
   router.use('/shops', require('../controller/shopController'));
   router.use('/employees', require('../controller/employeeController'));
-} else if(authenticateUsers('shop')){
+} else if(authenticateUsers('shopowner')){
   router.use('/shops', require('../controller/shopController'));
+  router.use('/employees', require('../controller/error'))
 } else if (authenticateUsers('employee')){
   router.use('/employees', require('../controller/employeeController'));
 } else {

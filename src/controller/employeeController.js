@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
-const passportLocalMongoose = require('passport-local-mongoose');
 const { validationResult, check, checkSchema } = require('express-validator/check');
 const { Router } = require('express');
 const employeeController = new Router();
 const employeeSchema = require('../schema/employee');
 
-employeeSchema.plugin(passportLocalMongoose);
 const Employee = mongoose.model('employee', employeeSchema);
 
 employeeController.use((req, res, next) => {
@@ -21,7 +19,7 @@ employeeController.post('/', [
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
   check('store.shopId', 'Please enter a valid shop ID').matches(/([a-zA-Z0-9])\w/).not().isEmpty(),
   check('contactDetails.telephone', 'Please enter a valid telephone number').matches(/([0-9])\w/),
-  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/),
+  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/).normalizeEmail({all_lowercase: true}),
   check('contactDetails.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
   check('startDate', 'Please enter a valid start date').matches(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/),
   check('emergencyContact.name').isLength({min: 2, max: 144}).isUppercase(),
@@ -102,7 +100,7 @@ employeeController.put('/:id', [
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
   check('store.shopId', 'Please enter a valid shop ID').matches(/([a-zA-Z0-9])\w/).not().isEmpty(),
   check('contactDetails.telephone', 'Please enter a valid telephone number').matches(/([0-9])\w/),
-  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/),
+  check('contactDetails.email', 'Please enter a valid email').matches(/^[a-zA-z]{2,144}((.){1}[a-zA-Z]{2,144})?(@)[a-zA-Z]{2,144}(.){1}([a-zA-Z]{3})/).normalizeEmail({all_lowercase: true}),
   check('contactDetails.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
   check('startDate', 'Please enter a valid start date').matches(/([0-9]{2})\/([0-9]{2})\/([0-9]{4})/),
   check('emergencyContact.name').isLength({min: 2, max: 144}).isUppercase(),

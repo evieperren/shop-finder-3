@@ -11,7 +11,7 @@ function authoriseUsers (username, password, cb) {
 
 }
 function authenticateUsers(role){
-  if(basicAuth.safeCompare(role, 'admin') | basicAuth.safeCompare(role, 'shopOwner') | basicAuth.safeCompare(role, 'employee') ){
+  if(basicAuth.safeCompare(role, 'admin') | basicAuth.safeCompare(role, 'shopowner') | basicAuth.safeCompare(role, 'employee') ){
     return true
   } else {
     return false
