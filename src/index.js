@@ -8,7 +8,7 @@ const expressValidator = require('express-validator')
 const basicAuth = require('express-basic-auth')
 const routerPage = require('./routes/router')
 const app = express();
-const { authoriseUsers, unauthorisedResponse } = require('./auth')
+const { authoriseUsers, unauthorisedResponse } = require('../utils/authorisation')
 
 mongoose.connect(`${process.env.DATABASE_CONNECTION}`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true })
 .then(() => {

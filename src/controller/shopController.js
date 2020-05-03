@@ -6,14 +6,16 @@ const axios = require('axios');
 const stringify = require('json-stringify-safe');
 const { check, validationResult } = require('express-validator/check')
 const Shop = mongoose.model('shops', require('../schema/shop'));
+const { admin, adminAndShop } = require('../../utils/authentication')
 
 shopController.use((req, res, next) => {
   winston.debug('Reached shop controller');
+  console.log(req.auth)
   next();
 });
 
 // CREATE
-shopController.post('/', [
+shopController.post('/', adminAndShop, [
   check('name', 'Please enter a valid name').isString().isLength({min: 2, max: 144}),
   check('type', 'Please enter a valid shop type').isString().isLength({min: 2, max: 144}),
   check('location.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
@@ -51,7 +53,7 @@ shopController.post('/', [
   }
 });
 // READ
-shopController.get('/', async (req, res) => {
+shopController.get('/', admin, async (req, res) => {
   try {
     const returnedShops = await Shop.find();
     res.send(returnedShops);
@@ -63,7 +65,7 @@ shopController.get('/', async (req, res) => {
   }
 });
 // READ ONE
-shopController.get('/:shopId', async (req, res) => {
+shopController.get('/:shopId', admin, async (req, res) => {
   try {
     const returnedShop = await Shop.findById(req.params.shopId);
     res.send(returnedShop);
@@ -75,7 +77,7 @@ shopController.get('/:shopId', async (req, res) => {
   }
 });
 // UPDATE
-shopController.put('/:shopId', [
+shopController.put('/:shopId', adminAndShop, [
   check('name', 'Please enter a valid name').isString().isLength({min: 2, max: 144}),
   check('type', 'Please enter a valid shop type').isString().isLength({min: 2, max: 144}),
   check('location.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
@@ -113,7 +115,7 @@ shopController.put('/:shopId', [
   }
 });
 // DELETE
-shopController.delete('/:shopId', async (req, res) => {
+shopController.delete('/:shopId', adminAndShop, async (req, res) => {
   try {
     await Shop.findByIdAndDelete(req.params.shopId);
     res.status(200).json({
@@ -128,7 +130,7 @@ shopController.delete('/:shopId', async (req, res) => {
 });
 
 // GET ALL EMPLOYEES
-shopController.get('/:shopId/employees', (req, res) => {
+shopController.get('/:shopId/employees', admin, (req, res) => {
   axios
     .get('http://localhost:3040/api/employees')
     .then((returnedEmployees) => {
@@ -144,7 +146,7 @@ shopController.get('/:shopId/employees', (req, res) => {
 });
 // GET ONE EMPLOYEE
 // CastError: Cast to ObjectId failed for value "undefined" at path "_id" for model "employee"
-shopController.get('/:shopId/employees/:employeeID', (req, res) => {
+shopController.get('/:shopId/employees/:employeeID', admin, (req, res) => {
   axios
     .get(`http://localhost:3040/api/employees/${req.params.employeeId}`)
     .then((response) => {
@@ -157,7 +159,7 @@ shopController.get('/:shopId/employees/:employeeID', (req, res) => {
     });
 });
 // ADD AN  EMPLOYEE
-shopController.post('/:shopId/employees', [
+shopController.post('/:shopId/employees', admin, [
   check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
@@ -169,9 +171,9 @@ shopController.post('/:shopId/employees', [
   check('emergencyContact.name').isLength({min: 2, max: 144}).isUppercase(),
   check('emergencyContact.telephone').isLength({min: 9, max:11}).matches(/([0-9])\w/),
   check('emergencyContact.relation').matches(/(parent)|(sibling)|(guardian)|(friend)|(collegue)|(wife)|(husband)|(child)/),
-], (req, res) => {
-  axios
-    .post('http://localhost:3040/api/employees', {
+], async(req, res) => {
+  try {
+    await axios.post('http://localhost:3040/api/employees', {
       name: {
         first: req.body.name.first,
         last: req.body.name.last,
@@ -192,38 +194,36 @@ shopController.post('/:shopId/employees', [
         relation: req.body.emergencyContact.relation,
       },
     })
-    .then((response) => {
-      stringify.getSerialize(response);
-      const newEmployee = response.data;
 
-      // const errors = validationResult(req)
-      // if(!errors.isEmpty()){
-      //   res.status(400).json({
-      //     errors: errors.array()
-      //   })
-      // } else {
-        res.send(newEmployee);
-      // }
-    })
-    .catch((error) => {
+    stringify.getSerialize(response);
+    const newEmployee = response.data;
+
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
       res.status(400).json({
-        message: `oh no ${error}`,
-      });
+        errors: errors.array()
+      })
+    } else {
+      res.send(newEmployee);
+    }
+  } catch (err) {
+    res.status(400).json({
+      message: `oh no ${error}`,
     });
+  }
 });
 // REMOVE EMPLOYEE
-shopController.delete('/:shopId/employees/:employeeId', (req, res) => {
-  axios
-    .delete(`http://localhost:3040/api/employees/${req.params.employeeId}`)
-    .then(() => {
-      res.status(200).json({
-        message: `${req.params.employeeId} has been successfully removed`,
-      });
-    })
-    .catch((error) => {
-      res.status(400).json({
-        message: `${error}`,
-      });
+shopController.delete('/:shopId/employees/:employeeId', adminAndShop, async(req, res) => {
+  try {
+    await axios.delete(`http://localhost:3040/api/employees/${req.params.employeeId}`)
+    res.status(200).json({
+      message: `${req.params.employeeId} has been successfully removed`,
     });
+
+  } catch (err) {
+    res.status(400).json({
+      message: `${err}`,
+    });
+  }
 });
 module.exports = shopController;

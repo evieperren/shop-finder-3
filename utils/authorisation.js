@@ -10,15 +10,9 @@ function authoriseUsers (username, password, cb) {
   }
 
 }
-function authenticateUsers(role){
-  if(basicAuth.safeCompare(role, 'admin') | basicAuth.safeCompare(role, 'shopowner') | basicAuth.safeCompare(role, 'employee') ){
-    return true
-  } else {
-    return false
-  }
-}
+
 function unauthorisedResponse(){
   throw new Error('User is not authorised')
 }
 
-module.exports = { authoriseUsers, unauthorisedResponse, authenticateUsers }
+module.exports = { authoriseUsers, unauthorisedResponse}

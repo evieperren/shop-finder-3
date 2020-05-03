@@ -4,6 +4,7 @@ const { validationResult, check, checkSchema } = require('express-validator/chec
 const { Router } = require('express');
 const employeeController = new Router();
 const employeeSchema = require('../schema/employee');
+const { admin, adminAndEmployee } = require('../../utils/authentication');
 
 const Employee = mongoose.model('employee', employeeSchema);
 
@@ -13,7 +14,7 @@ employeeController.use((req, res, next) => {
 });
 
 // CREATE
-employeeController.post('/', [
+employeeController.post('/', adminAndEmployee, [
   check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
@@ -68,7 +69,7 @@ employeeController.post('/', [
   }
 });
 // READ
-employeeController.get('/', async (req, res) => {
+employeeController.get('/', admin, async (req, res) => {
   try {
     const returnedEmployees = await Employee.find();
     res.send(returnedEmployees);
@@ -80,7 +81,7 @@ employeeController.get('/', async (req, res) => {
   }
 });
 // READ ONE
-employeeController.get('/:id', async (req, res) => {
+employeeController.get('/:id', admin, async (req, res) => {
   try {
     const returnedEmployees = await Employee.findById(req.params.id);
     res.send(returnedEmployees);
@@ -94,7 +95,7 @@ employeeController.get('/:id', async (req, res) => {
 // UPDATE
 // does not do partial updates?
 
-employeeController.put('/:id', [
+employeeController.put('/:id', adminAndEmployee, [
   check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
@@ -148,7 +149,7 @@ employeeController.put('/:id', [
 });
 
 // DELETE
-employeeController.delete('/:id', async (req, res) => {
+employeeController.delete('/:id', adminAndEmployee, async (req, res) => {
   try {
     await Employee.findByIdAndDelete(req.params.id);
     res.status(200).json({
