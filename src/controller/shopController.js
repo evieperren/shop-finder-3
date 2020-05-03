@@ -6,7 +6,7 @@ const axios = require('axios');
 const stringify = require('json-stringify-safe');
 const { check, validationResult } = require('express-validator/check')
 const Shop = mongoose.model('shops', require('../schema/shop'));
-const { admin, adminAndShop } = require('../../utils/authentication')
+const { authenticate } = require('../../utils/authentication')
 
 shopController.use((req, res, next) => {
   winston.debug('Reached shop controller');
@@ -15,7 +15,7 @@ shopController.use((req, res, next) => {
 });
 
 // CREATE
-shopController.post('/', adminAndShop, [
+shopController.post('/', authenticate.adminAndShop, [
   check('name', 'Please enter a valid name').isString().isLength({min: 2, max: 144}),
   check('type', 'Please enter a valid shop type').isString().isLength({min: 2, max: 144}),
   check('location.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
@@ -53,7 +53,7 @@ shopController.post('/', adminAndShop, [
   }
 });
 // READ
-shopController.get('/', admin, async (req, res) => {
+shopController.get('/', authenticate.admin, async (req, res) => {
   try {
     const returnedShops = await Shop.find();
     res.send(returnedShops);
@@ -65,7 +65,7 @@ shopController.get('/', admin, async (req, res) => {
   }
 });
 // READ ONE
-shopController.get('/:shopId', admin, async (req, res) => {
+shopController.get('/:shopId', authenticate.admin, async (req, res) => {
   try {
     const returnedShop = await Shop.findById(req.params.shopId);
     res.send(returnedShop);
@@ -77,7 +77,7 @@ shopController.get('/:shopId', admin, async (req, res) => {
   }
 });
 // UPDATE
-shopController.put('/:shopId', adminAndShop, [
+shopController.put('/:shopId', authenticate.adminAndShop, [
   check('name', 'Please enter a valid name').isString().isLength({min: 2, max: 144}),
   check('type', 'Please enter a valid shop type').isString().isLength({min: 2, max: 144}),
   check('location.postcode', 'Please enter a valid postcode').matches(/((^([a-zA-Z]){1,2})([0-9]{1,2})([a-zA-Z]{1})? ([0-9]{1})(([a-zA-Z]){2}))/).isUppercase(),
@@ -86,16 +86,14 @@ shopController.put('/:shopId', adminAndShop, [
   check('scale', 'Please enter a valid string').isString().matches(/(local)|(national)|(global)|(international)/)
 ], async (req, res) => {
   try {
-    const returnedShop = await Shop.findOneAndUpdate({ _id: req.params.shopId}, {
-      name: req.body.name,
-      type: req.body.type,
-      location: {
-        postcode: req.body.location.postcode,
-        town: req.body.location.town,
-        online: req.body.location.online
-      },
-      scale: req.body.scale
-    }, { new: true });
+    const returnedShop = await Shop.findByIdAndUpdate(req.params.shopId)
+
+    returnedShop.name = req.body.name || returnedShop.name
+    returnedShop.type = req.body.type || returnedShop.type
+    returnedShop.location.postcode = req.body.location.postcode || returnedShop.location.postcode
+    returnedShop.location.town = req.body.location.town || returnedShop.location.town
+    returnedShop.location.online = req.body.location.online || returnedShop.location.online
+    returnedShop.scale = req.body.scale || returnedShop.scale
 
     const errors = await validationResult(req)
 
@@ -115,7 +113,7 @@ shopController.put('/:shopId', adminAndShop, [
   }
 });
 // DELETE
-shopController.delete('/:shopId', adminAndShop, async (req, res) => {
+shopController.delete('/:shopId', authenticate.adminAndShop, async (req, res) => {
   try {
     await Shop.findByIdAndDelete(req.params.shopId);
     res.status(200).json({
@@ -130,7 +128,7 @@ shopController.delete('/:shopId', adminAndShop, async (req, res) => {
 });
 
 // GET ALL EMPLOYEES
-shopController.get('/:shopId/employees', admin, (req, res) => {
+shopController.get('/:shopId/employees', authenticate.admin, (req, res) => {
   axios
     .get('http://localhost:3040/api/employees')
     .then((returnedEmployees) => {
@@ -146,7 +144,7 @@ shopController.get('/:shopId/employees', admin, (req, res) => {
 });
 // GET ONE EMPLOYEE
 // CastError: Cast to ObjectId failed for value "undefined" at path "_id" for model "employee"
-shopController.get('/:shopId/employees/:employeeID', admin, (req, res) => {
+shopController.get('/:shopId/employees/:employeeID', authenticate.admin, (req, res) => {
   axios
     .get(`http://localhost:3040/api/employees/${req.params.employeeId}`)
     .then((response) => {
@@ -159,7 +157,7 @@ shopController.get('/:shopId/employees/:employeeID', admin, (req, res) => {
     });
 });
 // ADD AN  EMPLOYEE
-shopController.post('/:shopId/employees', admin, [
+shopController.post('/:shopId/employees', authenticate.admin, [
   check('name.first', 'Please enter a valid name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('name.last', 'Please enter a valid last name').isLength({min: 2, max: 12}).isString().isUppercase(),
   check('store.name', 'Please enter a valid store name').isLength({min:2, max: 45}).isString().matches(/([a-zA-Z])\w/),
@@ -213,7 +211,7 @@ shopController.post('/:shopId/employees', admin, [
   }
 });
 // REMOVE EMPLOYEE
-shopController.delete('/:shopId/employees/:employeeId', adminAndShop, async(req, res) => {
+shopController.delete('/:shopId/employees/:employeeId', authenticate.adminAndShop, async(req, res) => {
   try {
     await axios.delete(`http://localhost:3040/api/employees/${req.params.employeeId}`)
     res.status(200).json({

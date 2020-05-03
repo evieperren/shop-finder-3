@@ -50,8 +50,5 @@ const authenticate = {
     }
   }
 }
-module.exports.admin = authenticate.admin
-module.exports.employee = authenticate.employee
-module.exports.shop = authenticate.shop
-module.exports.adminAndShop = authenticate.adminAndShop
-module.exports.adminAndEmployee = authenticate.adminAndEmployee
+
+module.exports = authenticate

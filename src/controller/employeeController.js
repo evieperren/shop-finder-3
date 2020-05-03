@@ -109,27 +109,19 @@ employeeController.put('/:id', adminAndEmployee, [
   check('emergencyContact.relation').matches(/(parent)|(sibling)|(guardian)|(friend)|(collegue)|(wife)|(husband)|(child)/)
 ], async (req, res) => {
   try {
-    const returnedEmployee = await Employee.findOneAndUpdate({_id: req.params.id},  {
-      name: {
-        first: req.body.name.first,
-        last: req.body.name.last
-      },
-      store: {
-        name: req.body.store.name,
-        shopId: req.body.store.shopId
-      },
-      contactDetails: {
-        telephone: req.body.contactDetails.telephone,
-        email: req.body.contactDetails.email,
-        postcode: req.body.contactDetails.postcode
-      },
-      startDate: req.body.startDate,
-      emergencyContact: {
-        name: req.body.emergencyContact.name,
-        telephone: req.body.emergencyContact.telephone,
-        relation: req.body.emergencyContact.relation
-      }
-    }, {new: true});
+    const returnedEmployee = await Employee.findByIdAndUpdate(req.params.id)
+
+    returnedEmployee.name.first = req.body.name.first || returnedEmployee.name.first
+    returnedEmployee.name.last = req.body.name.last || returnedEmployee.name.last
+    returnedEmployee.store.name = req.body.store.name || returnedEmployees.store.name
+    returnedEmployee.store.shopId = req.body.store.shopId || returnedEmployees.store.shopId
+    returnedEmployee.contactDetails.telephone = req.body.contactDetails.telephone || returnedEmployee.contactDetails.telephone
+    returnedEmployee.contactDetails.email = req.body.contactDetails.email || returnedEmployee.contactDetails.email
+    returnedEmployee.contactDetails.postcode = req.body.contactDetails.postcode || returnedEmployee.contactDetails.postcode
+    returnedEmployee.startDate = req.body.startDate || returnedEmployee.startDate
+    returnedEmployee.emergencyContact.name = req.body.emergencyContact.name || returnedEmployee.emergencyContact.name
+    returnedEmployee.contactDetails.telephone = req.body.emergencyContact.telephone || returnedEmployee.contactDetails.telephone
+    returnedEmployee.contactDetails.relation = req.body.emergencyContact.relation || returnedEmployee.contactDetails.relation
 
     const errors = await validationResult(req)
 
