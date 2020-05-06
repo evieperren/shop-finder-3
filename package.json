@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch",
+    "test:watch": "jest --watch --runInBand --detectOpenHandles",
     "start": "nodemon index.js",
-    "lint": "npx eslint ./src --fix"
+    "lint": "npx eslint ./src --fix",
+    "pretest": "cross-env DATABASE=mongodb://localhost:2000/shop-finder-3-test"
   },
   "keywords": [],
   "author": "",
@@ -24,15 +25,17 @@
     "express-winston": "^4.0.3",
     "json-stringify-safe": "^5.0.1",
     "mongoose": "^5.9.5",
-    "supertest": "^4.0.2",
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.1.0",
     "eslint-plugin-import": "^2.20.2",
     "extend": "^3.0.2",
-    "jest": "^25.5.2",
-    "nodemon": "^2.0.2"
+    "jest": "^25.5.4",
+    "nodemon": "^2.0.2",
+    "superagent": "^5.2.2",
+    "supertest": "^4.0.2"
   }
 }

@@ -1,10 +1,11 @@
 const { Router } = require('express');
 const winston = require('winston');
+
 const router = new Router();
 
 router.use((req, res, next) => {
   winston.debug('Reached router page');
-  next()
+  next();
 });
 
 router.use('/shops', require('../controller/shopController'));
