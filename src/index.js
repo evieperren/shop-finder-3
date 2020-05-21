@@ -46,8 +46,7 @@ app.use(expressWinston.logger({
   )
 }))
 
-
-mongoose.connect(`${process.env.DATABASE}`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true }) // suggestion to fix unit tests to have useUnifiedTopology: false
+mongoose.connect(`${process.env.DATABASE}`, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: true })
   .then(() => {
     app.use('/api', routerPage);
     winston.debug('connected to database');
@@ -55,7 +54,7 @@ mongoose.connect(`${process.env.DATABASE}`, { useNewUrlParser: true, useUnifiedT
 
   })
   .catch((error) => {
-    console.log(process.env.DATABASE)
+    console.log(error)
     winston.error(error.message);
   });
 
