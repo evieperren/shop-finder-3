@@ -240,3 +240,4 @@
 {"message":"connect ECONNREFUSED 127.0.0.1:2000","level":"error"}
 {"message":"failed to connect to server [localhost:2000] on first connect [MongoNetworkError: connect ECONNREFUSED 127.0.0.1:2000]","level":"error"}
 {"message":"connect ECONNREFUSED 127.0.0.1:2000","level":"error"}
+{"message":"connect ECONNREFUSED 127.0.0.1:2000","level":"error"}

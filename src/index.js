@@ -50,8 +50,6 @@ mongoose.connect(`${process.env.DATABASE}`, { useNewUrlParser: true, useUnifiedT
   .then(() => {
     app.use('/api', routerPage);
     winston.debug('connected to database');
-
-
   })
   .catch((error) => {
     console.log(error)
